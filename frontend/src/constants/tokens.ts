@@ -28,7 +28,47 @@ export const TOKENS = `
     --font-headline: 'Manrope', sans-serif;
     --font-body: 'Inter', sans-serif;
     --r-sm: 4px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px; --r-full: 9999px;
+    --content-pad: 3rem;
   }
+
+  @media (max-width: 1024px) {
+    :root { --content-pad: 2rem; }
+  }
+  @media (max-width: 768px) {
+    :root { --content-pad: 1.5rem; }
+  }
+
+  .mobile-show { display: none !important; }
+  @media (max-width: 1024px) {
+    .mobile-hide { display: none !important; }
+    .mobile-show { display: block !important; }
+    .mobile-show-flex { display: flex !important; }
+  }
+
+  .responsive-grid {
+    display: grid;
+    grid-template-columns: 1fr 2.2fr;
+    gap: 1.75rem;
+  }
+  @media (max-width: 1024px) {
+    .responsive-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  }
+
+  .page-header {
+    padding: 3.5rem var(--content-pad) 2.5rem;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .stack-on-mobile {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+  @media (max-width: 768px) {
+    .stack-on-mobile { flex-direction: column; }
+  }
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body { font-family: var(--font-body); background: var(--surface); color: var(--on-surface); -webkit-font-smoothing: antialiased; }

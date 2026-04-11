@@ -5,10 +5,11 @@ import { TOKENS } from "../constants/tokens";
 import { DataProvider } from "../context/DataContext";
 import { NavWrapper } from "../components/NavWrapper";
 import { Footer } from "../components/Footer";
+import { BottomNav } from "../components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "The Editorial Architect | High-Impact Job Portal",
-  description: "Curated shortlist of high-impact opportunities in publishing and policy.",
+  title: "Nexus Talent | High-Impact Job Portal",
+  description: "Curated shortlist of high-impact opportunities in design, engineering and more.",
 };
 
 export default function RootLayout({
@@ -28,6 +29,7 @@ export default function RootLayout({
           <div style={{ minHeight: "calc(100vh - 64px)" }}>
             {children}
           </div>
+          <BottomNav />
           <FooterWrapper />
         </DataProvider>
       </body>

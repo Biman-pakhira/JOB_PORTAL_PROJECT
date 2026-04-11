@@ -3,13 +3,15 @@ const prisma = new PrismaClient();
 
 async function main() {
   try {
-    console.log('Attempting to connect to MongoDB...');
-    await prisma.$connect();
-    console.log('Successfully connected!');
-    const admins = await prisma.admin.findMany({ take: 1 });
-    console.log('Query successful, found admins:', admins.length);
+    console.log("Attempting to connect to database...");
+    const userCount = await prisma.user.count();
+    console.log(`Connection successful! User count: ${userCount}`);
+    
+    const jobCount = await prisma.job.count();
+    console.log(`Job count: ${jobCount}`);
+    
   } catch (err) {
-    console.error('Connection failed:');
+    console.error("Database connection failed:");
     console.error(err);
   } finally {
     await prisma.$disconnect();

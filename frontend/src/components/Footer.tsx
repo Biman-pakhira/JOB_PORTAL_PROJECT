@@ -5,10 +5,10 @@ import React from "react";
 export function Footer() {
   return (
     <footer style={{ background: "var(--surface-container-low)", marginTop: "6rem" }}>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "4rem 3rem 2rem", display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1.5fr", gap: "3rem" }}>
+      <div className="responsive-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "4rem var(--content-pad) 2rem", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "3rem" }}>
         <div>
           <span style={{ fontSize: "1rem", fontWeight: 800, background: "linear-gradient(135deg,var(--primary) 0%,var(--primary-container) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>The Editorial Architect</span>
-          <p style={{ marginTop: "0.75rem", fontSize: "0.8125rem", color: "var(--on-surface-variant)", lineHeight: 1.7 }}>Curating high-end opportunities for the world's most discerning editorial and creative professionals.</p>
+          <p style={{ marginTop: "0.75rem", fontSize: "0.8125rem", color: "var(--on-surface-variant)", lineHeight: 1.7 }}>Curating high-end opportunities for the world's most discerning professionals.</p>
         </div>
         {[["Platform", ["About Us", "Contact Support", "Newsletter"]], ["Legal", ["Privacy Policy", "Terms of Service"]]].map(([title, links]) => (
           <div key={title}>
@@ -36,7 +36,7 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "1.5rem 3rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(194,198,216,.25)" }}>
+      <div className="stack-on-mobile" style={{ maxWidth: 1280, margin: "0 auto", padding: "1.5rem var(--content-pad)", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(194,198,216,.25)" }}>
         <p style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>© 2024 The Editorial Architect. All rights reserved.</p>
         <div style={{ display: "flex", gap: "1rem" }}>
           {["share", "language"].map(icon => (

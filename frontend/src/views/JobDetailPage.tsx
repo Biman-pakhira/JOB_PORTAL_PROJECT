@@ -10,7 +10,7 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
     <main style={{ background: "var(--surface)", minHeight: "100vh", paddingBottom: "5rem" }}>
       {/* Header / Hero */}
       <header style={{ paddingTop: 100, paddingBottom: "3rem", background: "var(--surface-container-low)" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 var(--content-pad)" }}>
           
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
              <div style={{
@@ -26,12 +26,12 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
              </span>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
-            <div>
-              <h1 style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, marginBottom: "1rem" }}>
+          <div className="stack-on-mobile" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div style={{ flex: 1 }}>
+              <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, marginBottom: "1.5rem" }}>
                 {job.title}
               </h1>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", color: "var(--on-surface-variant)", fontSize: "0.9375rem", fontWeight: 500 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", color: "var(--on-surface-variant)", fontSize: "0.875rem", fontWeight: 500 }}>
                 <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><i className="ms" style={{ fontSize: 18 }}>location_on</i> {job.location}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><i className="ms" style={{ fontSize: 18 }}>work</i> {job.type}</span>
                 <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><i className="ms" style={{ fontSize: 18 }}>payments</i> {job.salary || "Competitive"}</span>
@@ -42,16 +42,10 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
                <button 
                 onClick={() => onBookmark(job.id)}
                 style={{
-                  width: 48, height: 48, borderRadius: "50%", background: bookmarked ? "var(--primary)" : "var(--surface-container-highest)",
+                  width: 44, height: 44, borderRadius: "50%", background: bookmarked ? "var(--primary)" : "var(--surface-container-highest)",
                   color: bookmarked ? "white" : "var(--on-surface)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s"
                 }}>
                  <i className={`ms ${bookmarked ? "ms-fill" : ""}`}>{bookmarked ? "bookmark" : "bookmark_border"}</i>
-               </button>
-               <button style={{
-                  width: 48, height: 48, borderRadius: "50%", background: "var(--surface-container-highest)",
-                  color: "var(--on-surface)", display: "flex", alignItems: "center", justifyContent: "center"
-               }}>
-                 <i className="ms">share</i>
                </button>
             </div>
           </div>
@@ -59,25 +53,25 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
       </header>
 
       {/* Content Grid */}
-      <div style={{ maxWidth: 1200, margin: "-1.5rem auto 0", padding: "0 2rem", display: "grid", gridTemplateColumns: "1fr 340px", gap: "2.5rem", position: "relative" }}>
+      <div className="responsive-grid" style={{ maxWidth: 1200, margin: "-1.5rem auto 0", padding: "0 var(--content-pad)", position: "relative" }}>
         
         {/* Main Content */}
         <section>
           {/* Urgency Banner */}
-          <div style={{ 
+          <div className="stack-on-mobile" style={{ 
             background: "linear-gradient(135deg, #e65100 0%, #bf360c 100%)", 
             borderRadius: "var(--r-md)", padding: "1.25rem 1.5rem", color: "white",
-            display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem",
+            justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem",
             boxShadow: "0 8px 24px rgba(191,54,12,0.15)"
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-               <i className="ms" style={{ fontSize: 24, animation: "pulse 2.5s infinite" }}>alarm_on</i>
+               <i className="ms" style={{ fontSize: 24 }}>alarm_on</i>
                <div>
                   <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", opacity: 0.8 }}>Application Window Closing</div>
                   <div style={{ fontSize: "1rem", fontWeight: 800 }}>Ends soon</div>
                </div>
             </div>
-            <div style={{ textAlign: "right" }}>
+            <div style={{ textAlign: "left" }}>
                 <div style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", opacity: 0.8 }}>Deadline</div>
                 <div style={{ fontSize: "1rem", fontWeight: 800 }}>{job.deadline || "TBA"}</div>
             </div>
@@ -86,19 +80,19 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
           <div style={{ display: "flex", flexDirection: "column", gap: "3.5rem" }}>
             {/* Description */}
             <article>
-               <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+               <h2 style={{ fontSize: "1.375rem", fontWeight: 800, marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
                   <span style={{ width: 4, height: 24, background: "var(--primary)", borderRadius: 2 }} />
                   Job Description
                </h2>
-               <div style={{ color: "var(--on-surface-variant)", lineHeight: 1.8, fontSize: "1.0625rem" }}>
+               <div style={{ color: "var(--on-surface-variant)", lineHeight: 1.8, fontSize: "1rem" }}>
                   {job.description || "No detailed description provided."}
                </div>
                {job.skills && (
                  <div style={{ marginTop: "2rem" }}>
-                    <h4 style={{ fontSize: "0.875rem", fontWeight: 800, textTransform: "uppercase", color: "var(--on-surface)", marginBottom: "1rem" }}>Preferred Skills</h4>
+                    <h4 style={{ fontSize: "0.8125rem", fontWeight: 800, textTransform: "uppercase", color: "var(--on-surface)", marginBottom: "1rem" }}>Preferred Skills</h4>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                        {job.skills.split(',').map((s: string) => (
-                         <span key={s} style={{ padding: "0.4rem 1rem", background: "var(--surface-container-high)", borderRadius: "var(--r-full)", fontSize: "0.8125rem", fontWeight: 600 }}>
+                         <span key={s} style={{ padding: "0.4rem 1rem", background: "var(--surface-container-high)", borderRadius: "var(--r-full)", fontSize: "0.75rem", fontWeight: 600 }}>
                             {s.trim()}
                          </span>
                        ))}
@@ -108,25 +102,25 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
             </article>
 
             {/* Eligibility */}
-            <article style={{ background: "var(--surface-container-low)", borderRadius: "var(--r-xl)", padding: "2.5rem" }}>
-               <h2 style={{ fontSize: "1.5rem", fontWeight: 800, marginBottom: "2rem" }}>Eligibility Criteria</h2>
-               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-                  <div>
-                     <h3 style={{ fontSize: "0.875rem", fontWeight: 800, textTransform: "uppercase", color: "var(--primary)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <i className="ms">school</i> Education & Certifications
+            <article style={{ background: "var(--surface-container-low)", borderRadius: "var(--r-xl)", padding: "2rem" }}>
+               <h2 style={{ fontSize: "1.375rem", fontWeight: 800, marginBottom: "2rem" }}>Eligibility Criteria</h2>
+               <div className="stack-on-mobile">
+                  <div style={{ flex: 1 }}>
+                     <h3 style={{ fontSize: "0.8125rem", fontWeight: 800, textTransform: "uppercase", color: "var(--primary)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <i className="ms" style={{ fontSize: 18 }}>school</i> Education
                      </h3>
-                     <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.9375rem", color: "var(--on-surface-variant)" }}>
+                     <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.875rem", color: "var(--on-surface-variant)" }}>
                         <li style={{ display: "flex", gap: "0.5rem" }}>• Relevant degree in the field</li>
-                        <li style={{ display: "flex", gap: "0.5rem" }}>• Professional certifications preferred</li>
+                        <li style={{ display: "flex", gap: "0.5rem" }}>• Professional certifications</li>
                      </ul>
                   </div>
-                  <div>
-                     <h3 style={{ fontSize: "0.875rem", fontWeight: 800, textTransform: "uppercase", color: "var(--secondary)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <i className="ms">military_tech</i> Experience Profile
+                  <div style={{ flex: 1 }}>
+                     <h3 style={{ fontSize: "0.8125rem", fontWeight: 800, textTransform: "uppercase", color: "var(--secondary)", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <i className="ms" style={{ fontSize: 18 }}>military_tech</i> Experience
                      </h3>
-                     <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.9375rem", color: "var(--on-surface-variant)" }}>
-                        <li style={{ display: "flex", gap: "0.5rem" }}>• {job.experience || "Minimum 2-3 years of proven experience"}</li>
-                        <li style={{ display: "flex", gap: "0.5rem" }}>• Strong track record in similar roles</li>
+                     <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.875rem", color: "var(--on-surface-variant)" }}>
+                        <li style={{ display: "flex", gap: "0.5rem" }}>• {job.experience || "Minimum 2-3 years"}</li>
+                        <li style={{ display: "flex", gap: "0.5rem" }}>• Strong track record in roles</li>
                      </ul>
                   </div>
                </div>

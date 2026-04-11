@@ -40,6 +40,7 @@ const resumeStorage = multer.diskStorage({
         cb(null, `resume_${req.userId}_${Date.now()}${ext}`);
     }
 });
+});
 const resumeUpload = multer({
     storage: resumeStorage,
     fileFilter: (req, file, cb) => {
@@ -47,6 +48,27 @@ const resumeUpload = multer({
         else cb(new Error('Only PDF files are allowed'));
     },
     limits: { fileSize: 5 * 1024 * 1024 } // 5 MB cap
+});
+
+// Image storage for profile pictures
+const avatarStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = path.join(__dirname, '../uploads/avatars');
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        cb(null, `avatar_${req.userId}_${Date.now()}${ext}`);
+    }
+});
+const avatarUpload = multer({
+    storage: avatarStorage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) cb(null, true);
+        else cb(new Error('Only image files are allowed'));
+    },
+    limits: { fileSize: 2 * 1024 * 1024 } // 2 MB cap
 });
 
 // Middleware to verify standard User JWT
@@ -375,18 +397,65 @@ router.post('/admin/updates/upload', verifyAdmin, upload.single('file'), async (
 
 // ------------- USER PROFILE -------------
 
-// GET: current user profile (id, name, email, role, resumeUrl, resumeName)
+// GET: current user profile with all fields
 router.get('/me', verifyUser, async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: { id: req.userId },
-            select: { id: true, name: true, email: true, role: true, resumeUrl: true, resumeName: true }
+            select: { 
+                id: true, name: true, email: true, role: true, 
+                resumeUrl: true, resumeName: true,
+                profileImage: true, headline: true, location: true, phone: true,
+                topSkills: true, preferredSalary: true, workSetting: true,
+                desiredRole: true, industryFocus: true, openToWork: true
+            }
         });
         if (!user) return res.status(404).json({ error: 'User not found' });
         res.json(user);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
     }
+});
+
+// Update profile details
+router.put('/profile', verifyUser, async (req, res) => {
+    try {
+        const { 
+            name, headline, location, phone, topSkills, 
+            preferredSalary, workSetting, desiredRole, industryFocus, openToWork 
+        } = req.body;
+        
+        const updated = await prisma.user.update({
+            where: { id: req.userId },
+            data: { 
+                name, headline, location, phone, topSkills, 
+                preferredSalary, workSetting, desiredRole, industryFocus,
+                openToWork: openToWork === true || openToWork === 'true'
+            }
+        });
+        res.json({ message: 'Profile updated successfully', user: updated });
+    } catch (error) {
+        res.status(500).json({ error: 'Error updating profile' });
+    }
+});
+
+// POST: upload profile image
+router.post('/profile/image', verifyUser, (req, res) => {
+    avatarUpload.single('image')(req, res, async (err) => {
+        if (err) return res.status(400).json({ error: err.message });
+        if (!req.file) return res.status(400).json({ error: 'No image file uploaded' });
+        try {
+            const profileImage = `/uploads/avatars/${req.file.filename}`;
+            await prisma.user.update({
+                where: { id: req.userId },
+                data: { profileImage }
+            });
+            res.json({ message: 'Profile image updated', profileImage });
+        } catch (error) {
+            console.error('Image upload error:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
 });
 
 // POST: upload resume PDF (authenticated user)

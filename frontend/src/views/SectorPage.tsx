@@ -43,7 +43,7 @@ export function SectorPage({ title, subtitle, jobs, bookmarks, onBookmark, categ
   return (
     <main style={{ paddingTop: 88, paddingBottom: "5rem" }}>
       {/* Hero */}
-      <header className="fade-up" style={{ padding: "3.5rem 3rem 2.5rem", maxWidth: 1280, margin: "0 auto" }}>
+      <header className="fade-up page-header">
         <div style={{
           display: "inline-flex", alignItems: "center", gap: "0.5rem",
           padding: "0.25rem 0.875rem", background: "rgba(0,80,203,.08)",
@@ -53,7 +53,7 @@ export function SectorPage({ title, subtitle, jobs, bookmarks, onBookmark, categ
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--primary)", animation: "pulse 2s infinite" }} />
           {categoryFilter || "All"} Opportunities
         </div>
-        <h1 style={{ fontSize: "clamp(2.25rem,4vw,3.5rem)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, marginBottom: "1rem" }}>
+        <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, marginBottom: "1rem" }}>
           {title} <span style={{ background: "linear-gradient(135deg,var(--primary) 0%,var(--primary-container) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Shortlist.</span>
         </h1>
         <p style={{ fontSize: "1.0625rem", color: "var(--on-surface-variant)", maxWidth: 540, lineHeight: 1.7 }}>
@@ -62,7 +62,7 @@ export function SectorPage({ title, subtitle, jobs, bookmarks, onBookmark, categ
       </header>
 
       {/* Bento Layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2.2fr", gap: "1.75rem", padding: "0 3rem", maxWidth: 1280, margin: "0 auto", alignItems: "start" }}>
+      <div className="responsive-grid" style={{ padding: "0 var(--content-pad)", maxWidth: 1280, margin: "0 auto", alignItems: "start" }}>
 
         {/* Sidebar */}
         <aside style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
