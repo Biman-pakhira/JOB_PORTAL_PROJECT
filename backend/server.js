@@ -20,6 +20,11 @@ app.get('/', (req, res) => {
 const platformRoutes = require('./routes/authAndJobs');
 app.use('/api', platformRoutes);
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-});
+// Only listen on the port if not running in a serverless environment (like Vercel)
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    app.listen(port, () => {
+        console.log(`Server running on http://localhost:${port}`);
+    });
+}
+
+module.exports = app;
