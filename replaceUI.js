@@ -91,5 +91,5 @@ content = content.replace(/const handleUpdateFile = async[^]+?};/s,
 );
 
 // Add "use client"; at the beginning for Next.js app router compatibility
-fs.writeFileSync('frontend/app/page.tsx', '// @ts-nocheck\n"use client";\n' + content);
+fs.writeFileSync('frontend/src/app/page.tsx', '// @ts-nocheck\n"use client";\n' + content);
 console.log("Successfully adapted editorial-architect.jsx for Next.js");
