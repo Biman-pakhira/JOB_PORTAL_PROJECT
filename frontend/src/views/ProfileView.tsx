@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { useData } from "../context/DataContext";
 import { getApiUrl } from "../utils/api";
