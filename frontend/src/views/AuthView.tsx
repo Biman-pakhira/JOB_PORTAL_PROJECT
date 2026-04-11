@@ -1,5 +1,5 @@
-"use client";
 import React, { useState } from "react";
+import { getApiUrl } from "../utils/api";
 import { Toast } from "../components/SharedAdminComponents";
 
 export function AuthView({ onAuthSuccess, onBack }: any) {

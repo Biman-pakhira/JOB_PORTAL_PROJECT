@@ -1,5 +1,5 @@
-"use client";
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { getApiUrl } from "../utils/api";
 
 const DataContext = createContext<any>(null);
 
