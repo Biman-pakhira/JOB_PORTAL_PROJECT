@@ -40,7 +40,6 @@ const resumeStorage = multer.diskStorage({
         cb(null, `resume_${req.userId}_${Date.now()}${ext}`);
     }
 });
-});
 const resumeUpload = multer({
     storage: resumeStorage,
     fileFilter: (req, file, cb) => {
