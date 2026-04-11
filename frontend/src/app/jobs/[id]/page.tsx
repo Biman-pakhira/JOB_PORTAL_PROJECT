@@ -7,7 +7,7 @@ import { useData } from "../../../context/DataContext";
 export default function JobPageRoute() {
   const { id } = useParams();
   const { bookmarks, toggleBookmark } = useData();
-  const [job, setJob] = useState(null);
+  const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
