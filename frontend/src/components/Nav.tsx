@@ -71,11 +71,17 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
           display: "flex", alignItems: "center", justifyContent: "center",
           background: "var(--surface-container-high)", border: "1.5px solid var(--primary)33"
         }}>
-          {user?.profileImage ? (
-             <img src={user.profileImage} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Me" />
+          {user ? (
+            user.profileImage ? (
+              <img src={user.profileImage} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt="Me" />
+            ) : (
+              <i className="ms" style={{ fontSize: 20, color: "var(--primary)" }}>person</i>
+            )
+          ) : isAdmin ? (
+            <i className="ms" style={{ fontSize: 20, color: "var(--primary)" }}>admin_panel_settings</i>
           ) : (
-             <i className="ms" style={{ fontSize: 20, color: "var(--primary)" }}>person</i>
-          ) || (isAdmin && <i className="ms" style={{ fontSize: 20, color: "var(--primary)" }}>admin_panel_settings</i>)}
+            <i className="ms" style={{ fontSize: 20, color: "var(--primary)" }}>person</i>
+          )}
         </Link>
       </div>
 
