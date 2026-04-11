@@ -21,13 +21,22 @@ export function Toast({ msg, type }: any) {
 
 export function DropZone({ onFile, accept, label }: any) {
   const [dragging, setDragging] = useState(false);
+  const [fileName, setFileName] = useState("");
   const inputRef = useRef();
+
+  const handleFile = (f: File) => {
+    if (f) {
+      setFileName(f.name);
+      onFile(f);
+    }
+  };
+
   return (
     <div
       onClick={() => inputRef.current.click()}
       onDragOver={e => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
-      onDrop={e => { e.preventDefault(); setDragging(false); const f = (e as any).dataTransfer.files[0]; if (f) onFile(f); }}
+      onDrop={e => { e.preventDefault(); setDragging(false); const f = (e as any).dataTransfer.files[0]; handleFile(f); }}
       style={{
         border: `2px dashed ${dragging ? "var(--primary)" : "var(--outline-variant)"}`,
         borderRadius: "var(--r-xl)", padding: "2.5rem 2rem",
@@ -35,10 +44,12 @@ export function DropZone({ onFile, accept, label }: any) {
         background: dragging ? "rgba(0,80,203,.04)" : "var(--surface-container-low)",
         transition: "border-color .18s,background .18s",
       }}>
-      <i className="ms" style={{ fontSize: 36, color: "var(--on-surface-variant)", marginBottom: "0.75rem", display: "block" }}>upload_file</i>
-      <p style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "0.375rem" }}>{label}</p>
-      <p style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>Drag & drop or click to browse — .xlsx or .csv</p>
-      <input ref={inputRef as any} type="file" accept={accept} style={{ display: "none" }} onChange={(e: any) => { if (e.target.files[0]) onFile(e.target.files[0]); }} />
+      <i className="ms" style={{ fontSize: 36, color: "var(--on-surface-variant)", marginBottom: "0.75rem", display: "block" }}>{fileName ? "task_check" : "upload_file"}</i>
+      <p style={{ fontSize: "0.9375rem", fontWeight: 700, marginBottom: "0.375rem" }}>{fileName || label}</p>
+      <p style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>
+        {fileName ? `File selected: ${fileName}` : "Drag & drop or click to browse — .xlsx or .csv"}
+      </p>
+      <input ref={inputRef as any} type="file" accept={accept} style={{ display: "none" }} onChange={(e: any) => handleFile(e.target.files[0])} />
     </div>
   );
 }
@@ -81,7 +92,7 @@ export function DataTable({ rows, columns, onDelete, onEdit }: any) {
 }
 
 export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
-  const [form, setForm] = useState(initialData || { title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "" });
+  const [form, setForm] = useState(initialData || { title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "" });
   const [err, setErr] = useState("");
   
   // Update form if initialData changes (for Edit mode)
@@ -94,7 +105,7 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
     if (!form.title || !form.company) { setErr("Title and Company are required."); return; }
     onAdd({ ...form, id: form.id || Date.now(), logo: form.logo || form.company.slice(0, 2).toUpperCase(), featured: false });
     if (!initialData) {
-        setForm({ title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "" });
+        setForm({ title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "" });
     }
     setErr("");
   };
@@ -127,6 +138,7 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
         {field("Category", "category", "text", ["Editorial", "UX Writing", "Ops", "Narrative", "Copywriting", "Strategy", "Govt"])}
         {field("Salary", "salary")}
         {field("Deadline", "deadline")}
+        {field("Apply URL", "url")}
         {field("Logo Initials", "logo")}
         {field("Logo Color", "logoColor", "color")}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>

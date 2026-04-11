@@ -155,13 +155,17 @@ export function AdminPage() {
     const method = isEdit ? 'PATCH' : 'POST';
     
     try {
+      // If creating a new job, remove the temporary numeric ID so MongoDB can generate a proper ObjectID
+      const payload = isEdit ? jobData : { ...jobData };
+      if (!isEdit) delete payload.id;
+
       const res = await fetch(url, {
         method,
         headers: { 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify(jobData)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (res.ok) {

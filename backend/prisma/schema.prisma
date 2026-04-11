@@ -28,6 +28,11 @@ model Job {
   experience  String?
   postingDate String?
   category    String?       @default("Private")
+  urgent      Boolean       @default(false)
+  logo        String?
+  logoColor   String?
+  deadline    String?
+  postedAgo   String?       @default("Just now")
   isActive    Boolean       @default(true)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

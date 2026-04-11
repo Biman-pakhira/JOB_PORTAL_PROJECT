@@ -258,11 +258,20 @@ router.post('/admin/jobs/upload', verifyAdmin, upload.single('file'), async (req
 // Admin Route: Manual Job Create
 router.post('/admin/jobs', verifyAdmin, async (req, res) => {
     try {
+        const { id, title, company, location, type, salary, description, skills, url, experience, postingDate, category, urgent, logo, logoColor, deadline, postedAgo } = req.body;
+        
+        // Construct the data object with only valid schema fields
+        const jobData = {
+            title, company, location, type, salary, description, skills, 
+            url, experience, postingDate, category,
+            urgent: urgent === true || urgent === 'true',
+            logo, logoColor, deadline,
+            postedAgo: postedAgo || 'Just now',
+            isActive: true
+        };
+
         const job = await prisma.job.create({
-            data: { 
-                ...req.body,
-                isActive: true
-            }
+            data: jobData
         });
         res.json({ message: 'Job created successfully', job });
     } catch (error) {
@@ -309,26 +318,26 @@ router.post('/admin/jobs/seed', verifyAdmin, async (req, res) => {
         {"title":"React Developer","company":"WebStudio","location":"Remote","type":"Full-time","salary":"$90k - $120k","description":"Build beautiful UIs with React and Tailwind.","skills":"React, CSS, HTML","url":"https://example.com/apply/react","category":"Private","isActive":true},
         {"title":"Cloud Architect","company":"SkyData","location":"Global","type":"Contract","salary":"$160k+","description":"Lead our transition to serverless architecture.","skills":"AWS, Serverless, Node.js","url":"https://example.com/apply/cloud","category":"Private","isActive":true},
         {"title":"Data Scientist","company":"BrainyAI","location":"San Francisco","type":"Full-time","salary":"$140k - $180k","description":"Train LLMs and build data pipelines.","skills":"Python, PyTorch, SQL","url":"https://example.com/apply/data","category":"Private","isActive":true},
-        {"title":"Sr. Frontend Engineer","company":"TechCorp","location":"Remote","type":"Full-time","salary":"₹24,00,000","skills":"React, Next.js, Tailwind","category":"Private","isActive":true},
-        {"title":"Assistant Manager","company":"State Bank of India","location":"Mumbai","type":"Govt-Full","salary":"₹8,50,000","skills":"Finance, Aptitude","category":"Govt","isActive":true},
-        {"title":"Backend Developer","company":"GrowthScale","location":"Bangalore","type":"Full-time","salary":"₹18,00,000","skills":"Node.js, PostgreSQL","category":"Private","isActive":true},
-        {"title":"Product Designer","company":"Designly","location":"Delhi (NCR)","type":"Hybrid","salary":"₹12,00,000","skills":"Figma, UI/UX","category":"Private","isActive":true},
-        {"title":"Junior Engineer","company":"Indian Railways","location":"Kolkata","type":"Govt-Full","salary":"₹5,40,000","skills":"Civil Engineering","category":"Govt","isActive":true},
-        {"title":"Full Stack Intern","company":"StartupX","location":"Remote","type":"Internship","salary":"₹2,40,000","skills":"MERN Stack, Git","category":"Private","isActive":true},
-        {"title":"AI Solutions Data Scientist","company":"AI Solutions","location":"Hyderabad","type":"Full-time","salary":"₹20,00,000","skills":"Python, SQL","category":"Private","isActive":true},
-        {"title":"Marketing Head","company":"BrandNew","location":"Pune","type":"Full-time","salary":"₹30,00,000","skills":"Brand Strategy","category":"Private","isActive":true},
-        {"title":"Staff Nurse","company":"AIIMS","location":"Rishikesh","type":"Govt-Full","salary":"₹7,80,000","skills":"Healthcare, Nursing","category":"Govt","isActive":true},
-        {"title":"DevOps Lead","company":"CloudOps","location":"Pune","type":"Full-time","salary":"₹28,00,000","skills":"AWS, Docker, K8s","category":"Private","isActive":true},
-        {"title":"Cloud Architect","company":"SkyScale Systems","location":"Remote","type":"Full-time","salary":"₹35,00,000","skills":"AWS, Terraform, Kubernetes","category":"Private","isActive":true},
-        {"title":"Staff Nurse (Delhi)","company":"AIIMS Delhi","location":"New Delhi","type":"Govt-Full","salary":"₹7,20,000","skills":"Clinical Care, ICU, Patient Management","category":"Govt","isActive":true},
-        {"title":"QA Engineer","company":"BugSquashers","location":"Pune","type":"Full-time","salary":"₹11,00,000","skills":"Selenium, Cypress, Manual Testing","category":"Private","isActive":true},
-        {"title":"Probationary Officer","company":"Bank of Baroda","location":"PAN India","type":"Sarkari","salary":"₹6,50,000","skills":"Logical Reasoning, Banking, GK","category":"Govt","isActive":true},
-        {"title":"UI Developer","company":"Pixel Perfect","location":"Bangalore","type":"Contract","salary":"₹14,00,000","skills":"Vue.js, SCSS, Framer Motion","category":"Private","isActive":true},
-        {"title":"Data Analyst","company":"InsightFlow","location":"Hyderabad","type":"Hybrid","salary":"₹9,00,000","skills":"SQL, PowerBI, Tableau","category":"Private","isActive":true},
-        {"title":"Security Officer","company":"CISF","location":"Various","type":"Govt-Full","salary":"₹4,80,000","skills":"Public Safety, Physical Training","category":"Govt","isActive":true},
-        {"title":"Backend Lead","company":"FinTech Go","location":"Mumbai","type":"Full-time","salary":"₹32,00,000","skills":"Go, Microservices, gRPC","category":"Private","isActive":true},
-        {"title":"SEO Specialist","company":"RankUp Agency","location":"Remote","type":"Part-time","salary":"₹5,00,000","skills":"Google Analytics, Keyword Research","category":"Private","isActive":true},
-        {"title":"Graduate Trainee","company":"ONGC","location":"Dehradun","type":"Govt-Full","salary":"₹12,00,000","skills":"GATE Score, Engineering Fundamentals","category":"Govt","isActive":true},
+        {"title":"Sr. Frontend Engineer","company":"TechCorp","location":"Remote","type":"Full-time","salary":"₹24,00,000","skills":"React, Next.js, Tailwind","url":"https://example.com/apply/sr-frontend","category":"Private","isActive":true},
+        {"title":"Assistant Manager","company":"State Bank of India","location":"Mumbai","type":"Govt-Full","salary":"₹8,50,000","skills":"Finance, Aptitude","url":"https://sbi.co.in/careers","category":"Govt","isActive":true},
+        {"title":"Backend Developer","company":"GrowthScale","location":"Bangalore","type":"Full-time","salary":"₹18,00,000","skills":"Node.js, PostgreSQL","url":"https://example.com/apply/growthscale","category":"Private","isActive":true},
+        {"title":"Product Designer","company":"Designly","location":"Delhi (NCR)","type":"Hybrid","salary":"₹12,00,000","skills":"Figma, UI/UX","url":"https://example.com/apply/designly","category":"Private","isActive":true},
+        {"title":"Junior Engineer","company":"Indian Railways","location":"Kolkata","type":"Govt-Full","salary":"₹5,40,000","skills":"Civil Engineering","url":"https://indianrailways.gov.in","category":"Govt","isActive":true},
+        {"title":"Full Stack Intern","company":"StartupX","location":"Remote","type":"Internship","salary":"₹2,40,000","skills":"MERN Stack, Git","url":"https://example.com/apply/startupx-intern","category":"Private","isActive":true},
+        {"title":"AI Solutions Data Scientist","company":"AI Solutions","location":"Hyderabad","type":"Full-time","salary":"₹20,00,000","skills":"Python, SQL","url":"https://example.com/apply/ai-solutions","category":"Private","isActive":true},
+        {"title":"Marketing Head","company":"BrandNew","location":"Pune","type":"Full-time","salary":"₹30,00,000","skills":"Brand Strategy","url":"https://example.com/apply/brandnew-marketing","category":"Private","isActive":true},
+        {"title":"Staff Nurse","company":"AIIMS","location":"Rishikesh","type":"Govt-Full","salary":"₹7,80,000","skills":"Healthcare, Nursing","url":"https://aiimsrishikesh.edu.in","category":"Govt","isActive":true},
+        {"title":"DevOps Lead","company":"CloudOps","location":"Pune","type":"Full-time","salary":"₹28,00,000","skills":"AWS, Docker, K8s","url":"https://example.com/apply/cloudops-devops","category":"Private","isActive":true},
+        {"title":"Cloud Architect","company":"SkyScale Systems","location":"Remote","type":"Full-time","salary":"₹35,00,000","skills":"AWS, Terraform, Kubernetes","url":"https://example.com/apply/skyscale-cloud","category":"Private","isActive":true},
+        {"title":"Staff Nurse (Delhi)","company":"AIIMS Delhi","location":"New Delhi","type":"Govt-Full","salary":"₹7,20,000","skills":"Clinical Care, ICU, Patient Management","url":"https://aiims.edu","category":"Govt","isActive":true},
+        {"title":"QA Engineer","company":"BugSquashers","location":"Pune","type":"Full-time","salary":"₹11,00,000","skills":"Selenium, Cypress, Manual Testing","url":"https://example.com/apply/bugsquashers-qa","category":"Private","isActive":true},
+        {"title":"Probationary Officer","company":"Bank of Baroda","location":"PAN India","type":"Sarkari","salary":"₹6,50,000","skills":"Logical Reasoning, Banking, GK","url":"https://bankofbaroda.in/careers","category":"Govt","isActive":true},
+        {"title":"UI Developer","company":"Pixel Perfect","location":"Bangalore","type":"Contract","salary":"₹14,00,000","skills":"Vue.js, SCSS, Framer Motion","url":"https://example.com/apply/pixelperfect-ui","category":"Private","isActive":true},
+        {"title":"Data Analyst","company":"InsightFlow","location":"Hyderabad","type":"Hybrid","salary":"₹9,00,000","skills":"SQL, PowerBI, Tableau","url":"https://example.com/apply/insightflow-data","category":"Private","isActive":true},
+        {"title":"Security Officer","company":"CISF","location":"Various","type":"Govt-Full","salary":"₹4,80,000","skills":"Public Safety, Physical Training","url":"https://cisf.gov.in","category":"Govt","isActive":true},
+        {"title":"Backend Lead","company":"FinTech Go","location":"Mumbai","type":"Full-time","salary":"₹32,00,000","skills":"Go, Microservices, gRPC","url":"https://example.com/apply/fintechgo-backend","category":"Private","isActive":true},
+        {"title":"SEO Specialist","company":"RankUp Agency","location":"Remote","type":"Part-time","salary":"₹5,00,000","skills":"Google Analytics, Keyword Research","url":"https://example.com/apply/rankup-seo","category":"Private","isActive":true},
+        {"title":"Graduate Trainee","company":"ONGC","location":"Dehradun","type":"Govt-Full","salary":"₹12,00,000","skills":"GATE Score, Engineering Fundamentals","url":"https://ongcindia.com","category":"Govt","isActive":true},
         {"title":"Test Govt Listing","company":"Govt Agency","location":"Delhi","type":"Govt-Full","salary":null,"skills":"","url":"http://test.link","category":"Govt","isActive":true}
     ];
 
