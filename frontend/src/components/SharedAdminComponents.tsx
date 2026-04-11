@@ -92,7 +92,7 @@ export function DataTable({ rows, columns, onDelete, onEdit }: any) {
 }
 
 export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
-  const [form, setForm] = useState(initialData || { title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "" });
+  const [form, setForm] = useState(initialData || { title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "", qualifications: "", experience: "" });
   const [err, setErr] = useState("");
   
   // Update form if initialData changes (for Edit mode)
@@ -103,9 +103,18 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
   const set = (k: any) => (e: any) => setForm((f: any) => ({ ...f, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value }));
   const submit = () => {
     if (!form.title || !form.company) { setErr("Title and Company are required."); return; }
-    onAdd({ ...form, id: form.id || Date.now(), logo: form.logo || form.company.slice(0, 2).toUpperCase(), featured: false });
+    
+    // Clean payload for Prisma: remove read-only or invalid fields
+    const { featured, createdAt, updatedAt, applications, ...cleanPayload } = form;
+    
+    onAdd({ 
+      ...cleanPayload, 
+      id: form.id || Date.now(), 
+      logo: form.logo || form.company.slice(0, 2).toUpperCase()
+    });
+
     if (!initialData) {
-        setForm({ title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "" });
+        setForm({ title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "", qualifications: "", experience: "" });
     }
     setErr("");
   };
@@ -139,6 +148,8 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
         {field("Salary", "salary")}
         {field("Deadline", "deadline")}
         {field("Apply URL", "url")}
+        {field("Posted Ago", "postedAgo")}
+        {field("Experience", "experience")}
         {field("Logo Initials", "logo")}
         {field("Logo Color", "logoColor", "color")}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
@@ -150,6 +161,9 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
         </div>
       </div>
       <div style={{ marginBottom: "1rem" }}>
+        <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--on-surface-variant)", letterSpacing: "0.04em", textTransform: "uppercase", display: "block", marginBottom: "0.375rem" }}>Qualifications</label>
+        <textarea value={form.qualifications} onChange={set("qualifications")} rows={2} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none", marginBottom: "1rem" }} />
+        
         <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--on-surface-variant)", letterSpacing: "0.04em", textTransform: "uppercase", display: "block", marginBottom: "0.375rem" }}>Description</label>
         <textarea value={form.description} onChange={set("description")} rows={3} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none" }} />
       </div>

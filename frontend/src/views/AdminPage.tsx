@@ -199,24 +199,7 @@ export function AdminPage() {
     }
   };
 
-  const handleSeedJobs = async () => {
-    try {
-      showToast("Seeding sample data...", "warning");
-      const res = await fetch(`${apiUrl}/admin/jobs/seed`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showToast(data.message || "✓ Seeded successfully!");
-        await fetchData();
-      } else {
-        showToast(data.error || "Seed failed", "error");
-      }
-    } catch (err) {
-      showToast("Seed failed", "error");
-    }
-  };
+
 
   const handleUpdateFile = async (file: any) => {
     const formData = new FormData();
@@ -288,17 +271,7 @@ export function AdminPage() {
                     </div>
                 </div>
                 <DropZone onFile={handleJobFile} accept=".xlsx,.csv" label={`Click to upload ${uploadCategory} jobs`} />
-                <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--outline-variant)", display: "flex", justifyContent: "flex-end" }}>
-                    <button 
-                        onClick={handleSeedJobs}
-                        style={{ 
-                            fontSize: "0.8125rem", fontWeight: 700, color: "var(--primary)", background: "rgba(0,80,203,0.08)", 
-                            padding: "0.5rem 1rem", borderRadius: "var(--r-md)", border: "none", cursor: "pointer",
-                            display: "flex", alignItems: "center", gap: "0.4rem"
-                        }}>
-                        <i className="ms" style={{ fontSize: 18 }}>source</i> Quick Seed (Sample Data)
-                    </button>
-                </div>
+
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

@@ -87,17 +87,14 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
                <div style={{ color: "var(--on-surface-variant)", lineHeight: 1.8, fontSize: "1rem" }}>
                   {job.description || "No detailed description provided."}
                </div>
-               {job.skills && (
-                 <div style={{ marginTop: "2rem" }}>
-                    <h4 style={{ fontSize: "0.8125rem", fontWeight: 800, textTransform: "uppercase", color: "var(--on-surface)", marginBottom: "1rem" }}>Preferred Skills</h4>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                       {job.skills.split(',').map((s: string) => (
-                         <span key={s} style={{ padding: "0.4rem 1rem", background: "var(--surface-container-high)", borderRadius: "var(--r-full)", fontSize: "0.75rem", fontWeight: 600 }}>
-                            {s.trim()}
-                         </span>
-                       ))}
-                    </div>
-                 </div>
+
+               {job.qualifications && (
+                  <div style={{ marginTop: "2rem" }}>
+                     <h4 style={{ fontSize: "0.8125rem", fontWeight: 800, textTransform: "uppercase", color: "var(--on-surface)", marginBottom: "1rem" }}>Qualifications</h4>
+                     <div style={{ color: "var(--on-surface-variant)", lineHeight: 1.7, fontSize: "0.9375rem", whiteSpace: "pre-wrap" }}>
+                        {job.qualifications}
+                     </div>
+                  </div>
                )}
             </article>
 

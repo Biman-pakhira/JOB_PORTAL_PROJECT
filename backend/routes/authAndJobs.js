@@ -279,11 +279,11 @@ router.post('/admin/jobs/upload', verifyAdmin, upload.single('file'), async (req
 // Admin Route: Manual Job Create
 router.post('/admin/jobs', verifyAdmin, async (req, res) => {
     try {
-        const { id, title, company, location, type, salary, description, skills, url, experience, postingDate, category, urgent, logo, logoColor, deadline, postedAgo } = req.body;
+        const { id, title, company, location, type, salary, description, skills, qualifications, url, experience, postingDate, category, urgent, logo, logoColor, deadline, postedAgo } = req.body;
         
         // Construct the data object with only valid schema fields
         const jobData = {
-            title, company, location, type, salary, description, skills, 
+            title, company, location, type, salary, description, skills, qualifications,
             url, experience, postingDate, category,
             urgent: urgent === true || urgent === 'true',
             logo, logoColor, deadline,
