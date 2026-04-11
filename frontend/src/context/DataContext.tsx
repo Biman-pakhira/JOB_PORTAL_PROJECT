@@ -33,8 +33,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const fetchData = useCallback(async () => {
     try {
-      // Prioritize environment variable, fallback to localhost for dev
-      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace(/\/$/, '');
+      // Use environment variable if present, otherwise handle dev/prod fallbacks
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL 
+        ? process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')
+        : typeof window !== 'undefined' && window.location.hostname === 'localhost'
+          ? 'http://localhost:5001/api'
+          : '/api';
       const [jobsRes, updatesRes] = await Promise.all([
         fetch(`${apiUrl}/jobs`),
         fetch(`${apiUrl}/updates`)

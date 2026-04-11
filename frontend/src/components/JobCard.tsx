@@ -34,8 +34,11 @@ export function JobCard({ job, bookmarked, onBookmark, delay = 0 }: any) {
 
         {/* Content */}
         <div style={{ flex: 1, minWidth: 0 }}>
+          <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "#191b24", marginBottom: "0.5rem" }}>
+            {job.title}
+          </h3>
 
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.125rem" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1rem" }}>
             {[job.category, job.type].filter(Boolean).map(t => (
               <span key={t} style={{ padding: "0.25rem 0.75rem", borderRadius: "var(--r-full)", background: "var(--surface-container-high)", color: "var(--on-surface-variant)", fontSize: "0.75rem", fontWeight: 600 }}>{t}</span>
             ))}
