@@ -7,14 +7,28 @@ export function Footer() {
     <footer style={{ background: "var(--surface-container-low)", marginTop: "6rem" }}>
       <div className="responsive-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "4rem var(--content-pad) 2rem", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "3rem" }}>
         <div>
-          <span style={{ fontSize: "1rem", fontWeight: 800, background: "linear-gradient(135deg,var(--primary) 0%,var(--primary-container) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>The Editorial Architect</span>
-          <p style={{ marginTop: "0.75rem", fontSize: "0.8125rem", color: "var(--on-surface-variant)", lineHeight: 1.7 }}>Curating high-end opportunities for the world's most discerning professionals.</p>
+          <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--primary)" }}>Jobs Today</span>
+          <p style={{ marginTop: "0.75rem", fontSize: "0.8125rem", color: "var(--on-surface-variant)", lineHeight: 1.7 }}>
+            Empowering professionals through Biman Pakhira's vision of an accessible and inclusive creative economy.
+          </p>
         </div>
         {[["Platform", ["About Us", "Contact Support", "Newsletter"]], ["Legal", ["Privacy Policy", "Terms of Service"]]].map(([title, links]) => (
           <div key={title}>
             <h4 style={{ fontSize: "0.875rem", fontWeight: 700, marginBottom: "1rem" }}>{title}</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {links.map(l => <li key={l}><a href="#" style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>{l}</a></li>)}
+              {links.map(l => (
+                <li key={l}>
+                  {l === "Contact Support" ? (
+                    <div style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        <span style={{ fontWeight: 700, color: "var(--on-surface)" }}>Contact Support:</span>
+                        <span>8240529170</span>
+                        <a href="mailto:bimanpakhira2@gmail.com" style={{ color: "var(--primary)", textDecoration: "none" }}>bimanpakhira2@gmail.com</a>
+                    </div>
+                  ) : (
+                    <a href="#" style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>{l}</a>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
         ))}

@@ -17,7 +17,9 @@ export function AuthView({ onAuthSuccess, onBack }: any) {
 
     const endpoint = isLogin ? "/login" : "/signup";
     try {
-      const res = await fetch(`http://localhost:5001/api${endpoint}`, {
+      const apiUrl = getApiUrl();
+        
+      const res = await fetch(`${apiUrl}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)

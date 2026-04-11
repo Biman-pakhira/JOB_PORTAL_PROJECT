@@ -18,7 +18,8 @@ export function ProfileView() {
 
   const fetchApplications = async () => {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/applications`, {
+        const apiUrl = getApiUrl();
+        const res = await fetch(`${apiUrl}/applications`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
         const data = await res.json();
@@ -28,7 +29,8 @@ export function ProfileView() {
 
   const handleUpdateProfile = async (updates: any) => {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile`, {
+        const apiUrl = getApiUrl();
+        const res = await fetch(`${apiUrl}/profile`, {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
@@ -51,7 +53,8 @@ export function ProfileView() {
     const formData = new FormData();
     formData.append('resume', file);
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/resume/upload`, {
+        const apiUrl = getApiUrl();
+        const res = await fetch(`${apiUrl}/resume/upload`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
             body: formData
@@ -70,7 +73,8 @@ export function ProfileView() {
     const formData = new FormData();
     formData.append('image', file);
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/profile/image`, {
+        const apiUrl = getApiUrl();
+        const res = await fetch(`${apiUrl}/profile/image`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
             body: formData

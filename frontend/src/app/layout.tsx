@@ -8,8 +8,12 @@ import { Footer } from "../components/Footer";
 import { BottomNav } from "../components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "Nexus Talent | High-Impact Job Portal",
-  description: "Curated shortlist of high-impact opportunities in design, engineering and more.",
+  title: "Jobs Today | Your Daily Career Partner",
+  description: "High-impact job opportunities curated daily. Empowering creative professionals everywhere.",
+  icons: {
+    icon: "/favicon.png", // Fallback to favicon.png if uploaded
+    apple: "/apple-touch-icon.png",
+  }
 };
 
 export default function RootLayout({
