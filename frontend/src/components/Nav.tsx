@@ -34,19 +34,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
         <Link href="/" style={{
           display: "flex", alignItems: "center", textDecoration: "none"
         }}>
-          <img 
-            src="/logo.png" 
-            alt="Jobs Today" 
-            style={{ 
-              height: 180, 
-              width: 180, 
-              borderRadius: "50%", 
-              objectFit: "cover",
-              marginTop: "40px",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
-              border: "4px solid #fff"
-            }} 
-          />
+          <img src="/logo.png" alt="Jobs Today" style={{ height: 180, width: "auto" }} />
         </Link>
       </div>
 
