@@ -153,6 +153,9 @@ const verifyAdmin = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (!decoded.adminId) {
+            return res.status(403).json({ error: 'Forbidden: Admin access required' });
+        }
         req.adminId = decoded.adminId;
         next();
     } catch (err) {

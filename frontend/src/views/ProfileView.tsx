@@ -97,7 +97,7 @@ export function ProfileView() {
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 var(--content-pad)" }}>
         
         {/* Header Section */}
-        <section style={{ 
+        <section className="profile-header-container" style={{ 
             background: "#ffffff", borderRadius: "var(--r-xl)", padding: "2.5rem", 
             display: "flex", flexWrap: "wrap", gap: "2.5rem", alignItems: "center",
             boxShadow: "0 4px 20px rgba(0,0,0,0.03)", position: "relative", marginBottom: "2rem"
@@ -126,7 +126,7 @@ export function ProfileView() {
                 </label>
             </div>
 
-            <div style={{ flex: 1, minWidth: 280 }}>
+            <div className="profile-header-info" style={{ flex: 1, minWidth: 280 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.5rem" }}>
                     <h1 style={{ fontSize: "2rem", fontWeight: 800 }}>{profile.name}</h1>
                     <span style={{ 
@@ -150,7 +150,7 @@ export function ProfileView() {
             </div>
 
             {/* Progress Widget */}
-            <div style={{ 
+            <div className="profile-progress-widget" style={{ 
                 width: 320, background: "linear-gradient(135deg, #0066ff 0%, #0050cb 100%)", 
                 borderRadius: "var(--r-xl)", padding: "1.75rem", color: "white"
             }}>
@@ -257,7 +257,7 @@ export function ProfileView() {
                 <div style={{ background: "white", borderRadius: "var(--r-xl)", padding: "2.5rem", boxShadow: "0 4px 15px rgba(0,0,0,0.02)" }}>
                     <h3 style={{ fontSize: "1.125rem", fontWeight: 800, marginBottom: "2.5rem" }}>Job Preferences</h3>
                     
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem 4rem" }}>
+                    <div className="preferences-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem 4rem" }}>
                         {[
                             { label: "PREFERRED SALARY", value: profile.preferredSalary || "$140,000 - $185,000 / year" },
                             { label: "WORK SETTING", value: profile.workSetting || "Remote, Hybrid (NYC Only)" },
