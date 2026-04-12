@@ -14,6 +14,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
   const currentRoute = activePage === "browse-jobs" ? "/" : "/" + activePage;
 
   return (
+    <>
     <nav style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
       display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -34,7 +35,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
         <Link href="/" style={{
           display: "flex", alignItems: "center", textDecoration: "none"
         }}>
-          <img src="/logo.png" alt="Jobs Today" style={{ height: 36, width: "auto" }} />
+          <img src="/logo.png" alt="Jobs Today" style={{ height: 180, width: "auto" }} />
         </Link>
       </div>
 
@@ -91,6 +92,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
           )}
         </Link>
       </div>
+    </nav>
 
       {/* Mobile Drawer (Full Screen) */}
       {menuOpen && (
@@ -170,6 +172,6 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
           )}
         </div>
       )}
-    </nav>
+    </>
   );
 }
