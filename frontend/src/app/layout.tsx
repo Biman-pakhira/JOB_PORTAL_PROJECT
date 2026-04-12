@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { TOKENS } from "../constants/tokens";
 import { DataProvider } from "../context/DataContext";
+import { GoogleAuthProvider } from "../components/GoogleAuthProvider";
 import { NavWrapper } from "../components/NavWrapper";
 import { Footer } from "../components/Footer";
 import { BottomNav } from "../components/BottomNav";
@@ -29,12 +30,14 @@ export default function RootLayout({
       <body>
         <style>{TOKENS}</style>
         <DataProvider>
-          <NavWrapper />
-          <div style={{ minHeight: "calc(100vh - 64px)" }}>
-            {children}
-          </div>
-          <BottomNav />
-          <FooterWrapper />
+          <GoogleAuthProvider>
+            <NavWrapper />
+            <div style={{ minHeight: "calc(100vh - 64px)" }}>
+              {children}
+            </div>
+            <BottomNav />
+            <FooterWrapper />
+          </GoogleAuthProvider>
         </DataProvider>
       </body>
     </html>

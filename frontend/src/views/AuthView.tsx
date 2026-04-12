@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { getApiUrl } from "../utils/api";
 import { Toast } from "../components/SharedAdminComponents";
+import { GoogleLogin } from "@react-oauth/google";
 
 export function AuthView({ onAuthSuccess, onBack }: any) {
   const [isLogin, setIsLogin] = useState(true);
@@ -35,6 +36,31 @@ export function AuthView({ onAuthSuccess, onBack }: any) {
       }
     } catch (err) {
       setErr("Server connection failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setErr("");
+    setLoading(true);
+    try {
+      const apiUrl = getApiUrl();
+      const res = await fetch(`${apiUrl}/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: credentialResponse.credential })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("userToken", data.token);
+        localStorage.setItem("userData", JSON.stringify(data.user));
+        onAuthSuccess(data.user);
+      } else {
+        setErr(data.error || "Google authentication failed");
+      }
+    } catch (err) {
+      setErr("Failed to connect for Google login");
     } finally {
       setLoading(false);
     }
@@ -75,6 +101,23 @@ export function AuthView({ onAuthSuccess, onBack }: any) {
             {loading ? "Processing..." : isLogin ? "Sign In" : "Sign Up"}
           </button>
         </form>
+
+        <div style={{ margin: "1.5rem 0", display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--outline-variant)" }} />
+          <span style={{ fontSize: "0.75rem", color: "var(--on-surface-variant)", fontWeight: 700, textTransform: "uppercase" }}>Or continue with</span>
+          <div style={{ flex: 1, height: "1px", background: "var(--outline-variant)" }} />
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setErr("Google login failed")}
+            useOneTap
+            shape="pill"
+            theme="outline"
+            width="100%"
+          />
+        </div>
 
         <div style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem" }}>
           <span style={{ color: "var(--on-surface-variant)" }}>

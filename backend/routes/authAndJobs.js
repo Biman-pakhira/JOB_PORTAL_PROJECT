@@ -5,10 +5,12 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { PrismaClient } = require('@prisma/client');
+const { OAuth2Client } = require('google-auth-library');
 const { processExcelJobUpload, processExcelUpdateUpload } = require('../controllers/excelController');
 
 const router = express.Router();
 const prisma = new PrismaClient();
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Helper to handle Prisma errors with descriptive messages
 const handlePrismaError = (error, res) => {
@@ -198,6 +200,59 @@ router.post('/login', async (req, res) => {
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Google Social Auth
+router.post('/auth/google', async (req, res) => {
+    try {
+        const { credential } = req.body;
+        if (!credential) return res.status(400).json({ error: 'No credential provided' });
+
+        // Verify the ID token from Google
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const { sub, email, name, picture } = ticket.getPayload();
+
+        let user = await prisma.user.findUnique({ where: { email } });
+
+        if (user) {
+            // Update user with googleId if not already present
+            if (!user.googleId) {
+                user = await prisma.user.update({
+                    where: { email },
+                    data: { googleId: sub, profileImage: user.profileImage || picture }
+                });
+            }
+        } else {
+            // Create a new user without a password
+            user = await prisma.user.create({
+                data: {
+                    name,
+                    email,
+                    googleId: sub,
+                    profileImage: picture,
+                    role: 'customer'
+                }
+            });
+        }
+
+        const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        res.json({ 
+            token, 
+            user: { 
+                id: user.id, 
+                name: user.name, 
+                email: user.email, 
+                role: user.role, 
+                profileImage: user.profileImage 
+            } 
+        });
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+        res.status(401).json({ error: 'Google authentication failed' });
     }
 });
 
