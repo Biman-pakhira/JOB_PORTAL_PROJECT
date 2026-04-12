@@ -13,10 +13,18 @@
     flex-direction: column !important;
     align-items: flex-start !important;
   }
-  .profile-header-info {
-    min-width: 100% !important;
-  }
   .profile-progress-widget {
     width: 100% !important;
+  }
+  .stack-on-mobile {
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    text-align: center !important;
+  }
+  .footer-text {
+    font-size: 0.75rem !important;
+  }
+  .footer-heading {
+    font-size: 0.8125rem !important;
   }
 }

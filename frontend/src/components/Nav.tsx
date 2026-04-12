@@ -26,15 +26,15 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
         {/* Mobile Toggle on Left */}
         <button
           className="mobile-show"
-          onClick={() => setMenuOpen(!menuOpen)}
-          style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <i className="ms" style={{ fontSize: 24 }}>{menuOpen ? "close" : "menu"}</i>
+          onClick={() => setMenuOpen(true)}
+          style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", border: "none", cursor: "pointer" }}>
+          <i className="ms" style={{ fontSize: 28, color: "var(--on-surface)" }}>menu</i>
         </button>
 
         <Link href="/" style={{
           display: "flex", alignItems: "center", textDecoration: "none"
         }}>
-          <img src="/logo.png" alt="Jobs Today" style={{ height: 180, width: "auto" }} />
+          <img src="/logo.png" alt="Jobs Today" style={{ height: 36, width: "auto" }} />
         </Link>
       </div>
 
@@ -61,11 +61,13 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
               ) : (
                 <Link href="/auth" style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--on-surface-variant)" }}>Login</Link>
               )}
-              <Link href="/admin" style={{
-                padding: "0.5rem 1.125rem", borderRadius: "var(--r-md)",
-                fontSize: "0.8125rem", fontWeight: 700, color: "var(--on-primary)",
-                background: "var(--primary)"
-              }}>Admin</Link>
+              {isAdmin && (
+                <Link href="/admin" style={{
+                  padding: "0.5rem 1.125rem", borderRadius: "var(--r-md)",
+                  fontSize: "0.8125rem", fontWeight: 700, color: "var(--on-primary)",
+                  background: "var(--primary)"
+                }}>Admin</Link>
+              )}
             </>
           )}
         </div>
@@ -90,59 +92,82 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
         </Link>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer (Full Screen) */}
       {menuOpen && (
         <div style={{
-          position: "fixed", top: 64, left: 0, right: 0, bottom: 0,
-          background: "#ffffff", zIndex: 100, padding: "2.5rem var(--content-pad)",
-          display: "flex", flexDirection: "column", gap: "1.25rem",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-          overflowY: "auto",
-          animation: "fadeUp 0.3s ease-out"
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "#ffffff", zIndex: 9999, display: "flex", flexDirection: "column",
+          overflowY: "auto", animation: "fadeUp 0.2s ease-out"
         }}>
-          <div style={{ fontSize: "0.75rem", fontWeight: 800, textTransform: "uppercase", color: "var(--on-surface-variant)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>Navigation</div>
-          {links.map(l => (
-            <Link key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
-              style={{
-                fontSize: "1.5rem", fontWeight: 800, letterSpacing: "-0.02em",
-                color: currentRoute === l.href ? "var(--primary)" : "var(--on-surface)",
-                textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "space-between"
-              }}>
-              {l.label}
-              {currentRoute === l.href && <i className="ms" style={{ fontSize: 24 }}>chevron_right</i>}
-            </Link>
-          ))}
+          {/* Close Button Top Right */}
+          <div style={{ padding: "1.5rem", display: "flex", justifyContent: "flex-end" }}>
+            <button onClick={() => setMenuOpen(false)} style={{
+              width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
+              background: "transparent", border: "none", cursor: "pointer"
+            }}>
+              <i className="ms" style={{ fontSize: 28, color: "#1a1a1a" }}>close</i>
+            </button>
+          </div>
 
-          <div style={{ marginTop: "auto", paddingTop: "2rem", borderTop: "1px solid var(--outline-variant)", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            {activePage !== "auth" && (
-              <>
+          {/* Navigation Section */}
+          <div style={{ fontSize: "0.875rem", color: "#727687", padding: "0 1.5rem 0.5rem" }}>Navigation</div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {links.map(l => (
+              <Link key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
+                style={{
+                  padding: "1.125rem 1.5rem", borderBottom: "1px solid #e8e8e8", borderTop: l === links[0] ? "1px solid #e8e8e8" : "none",
+                  fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", textDecoration: "none", 
+                  display: "flex", alignItems: "center", justifyContent: "space-between"
+                }}>
+                {l.label}
+                <i className="ms" style={{ fontSize: 22, color: "#1a1a1a" }}>chevron_right</i>
+              </Link>
+            ))}
+          </div>
+
+          {/* Account Section */}
+          {activePage !== "auth" && (
+            <>
+              <div style={{ fontSize: "0.875rem", color: "#727687", padding: "2rem 1.5rem 0.5rem" }}>Account</div>
+              <div style={{ display: "flex", flexDirection: "column" }}>
                 {user?.id || isAdmin ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <div style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--on-surface-variant)" }}>
-                      Signed in as <span style={{ color: "var(--on-surface)", fontWeight: 800 }}>{isAdmin ? "Administrator" : user?.name}</span>
+                  <>
+                    <div style={{
+                      padding: "1.125rem 1.5rem", borderBottom: "1px solid #e8e8e8", borderTop: "1px solid #e8e8e8",
+                      fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", display: "flex", justifyContent: "space-between"
+                    }}>
+                      Signed in as {isAdmin ? "Admin" : user?.name}
                     </div>
-                    <button onClick={() => { onLogout(); setMenuOpen(false); }} style={{
-                      width: "100%", padding: "1rem", borderRadius: "var(--r-md)",
-                      background: "var(--error-container)", color: "var(--on-error-container)",
-                      fontWeight: 800, textAlign: "center"
-                    }}>Sign Out</button>
-                  </div>
+                    {isAdmin && (
+                      <Link href="/admin" onClick={() => setMenuOpen(false)} style={{
+                        padding: "1.125rem 1.5rem", borderBottom: "1px solid #e8e8e8",
+                        fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", textDecoration: "none", display: "flex", justifyContent: "space-between"
+                      }}>
+                        Admin Panel
+                        <i className="ms" style={{ fontSize: 22, color: "#1a1a1a" }}>chevron_right</i>
+                      </Link>
+                    )}
+                    <button onClick={() => { onLogout(); setMenuOpen(false); window.location.href = '/'; }} style={{
+                      padding: "1.125rem 1.5rem", border: "none", borderBottom: "1px solid #e8e8e8",
+                      fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", display: "flex", justifyContent: "space-between",
+                      background: "transparent", textAlign: "left", cursor: "pointer", fontFamily: "inherit"
+                    }}>
+                      Sign Out
+                      <i className="ms" style={{ fontSize: 22, color: "#1a1a1a" }}>chevron_right</i>
+                    </button>
+                  </>
                 ) : (
                   <Link href="/auth" onClick={() => setMenuOpen(false)} style={{
-                    width: "100%", padding: "1rem", borderRadius: "var(--r-md)",
-                    background: "var(--surface-container-high)", color: "var(--on-surface)",
-                    fontWeight: 800, textAlign: "center", textDecoration: "none"
-                  }}>Login to Account</Link>
+                    padding: "1.125rem 1.5rem", borderBottom: "1px solid #e8e8e8", borderTop: "1px solid #e8e8e8",
+                    fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", textDecoration: "none", display: "flex", justifyContent: "space-between"
+                  }}>
+                    Login to Account
+                    <i className="ms" style={{ fontSize: 22, color: "#1a1a1a" }}>chevron_right</i>
+                  </Link>
                 )}
-                <Link href="/admin" onClick={() => setMenuOpen(false)} style={{
-                  width: "100%", padding: "1.125rem", borderRadius: "var(--r-md)",
-                  background: "var(--primary)", color: "white",
-                  textAlign: "center", fontWeight: 800, textDecoration: "none",
-                  boxShadow: "0 8px 20px rgba(0,80,203,0.2)"
-                }}>Go to Admin Panel</Link>
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          )}
         </div>
       )}
     </nav>

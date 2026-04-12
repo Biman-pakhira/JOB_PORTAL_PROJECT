@@ -75,7 +75,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userData");
+    localStorage.removeItem("adminToken");
     setUser(null);
+    setIsAdmin(false);
   };
 
   return (

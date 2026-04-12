@@ -4,7 +4,7 @@ import { useData } from "../context/DataContext";
 import { getApiUrl } from "../utils/api";
 
 export function ProfileView() {
-  const { user, setUser } = useData();
+  const { user, setUser, logout } = useData();
   const [profile, setProfile] = useState<any>(user || {});
   const [applications, setApplications] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("Activity");
@@ -17,11 +17,11 @@ export function ProfileView() {
     }
   }, [user]);
 
-  const fetchApplications = async () => {
+    const fetchApplications = async () => {
     try {
         const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/applications`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('userToken')}` }
         });
         const data = await res.json();
         setApplications(data);
@@ -35,7 +35,7 @@ export function ProfileView() {
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}` 
+                'Authorization': `Bearer ${localStorage.getItem('userToken')}` 
             },
             body: JSON.stringify(updates)
         });
@@ -57,7 +57,7 @@ export function ProfileView() {
         const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/resume/upload`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('userToken')}` },
             body: formData
         });
         const data = await res.json();
@@ -77,7 +77,7 @@ export function ProfileView() {
         const apiUrl = getApiUrl();
         const res = await fetch(`${apiUrl}/profile/image`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('userToken')}` },
             body: formData
         });
         const data = await res.json();
@@ -147,6 +147,16 @@ export function ProfileView() {
                         </div>
                     )}
                 </div>
+                <button 
+                  onClick={() => { logout(); window.location.href = '/'; }}
+                  style={{ 
+                    marginTop: "1.5rem", padding: "0.5rem 1rem", borderRadius: "var(--r-md)", 
+                    border: "1px solid var(--error)", color: "var(--error)", background: "transparent",
+                    fontSize: "0.8125rem", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem"
+                  }}
+                >
+                  <i className="ms" style={{ fontSize: 16 }}>logout</i> Sign Out
+                </button>
             </div>
 
             {/* Progress Widget */}
