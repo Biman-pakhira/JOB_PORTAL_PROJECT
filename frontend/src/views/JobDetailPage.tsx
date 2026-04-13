@@ -161,7 +161,7 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
                <div>
                   <h4 style={{ fontSize: "0.75rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1rem" }}>Key Timeline</h4>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                     {[["Publication Date", "calendar_today", job.postedAgo || "Recently"], ["Application Deadline", "event_busy", job.deadline || "TBA"], ["Screening", "list_alt", "In Progress"]].map(([lbl, ic, val], i) => (
+                     {[["Publication Date", "calendar_today", job.postingDate || job.postedAgo || "Recently"], ["Application Deadline", "event_busy", job.deadline || "TBA"], ["Screening", "list_alt", "In Progress"]].map(([lbl, ic, val], i) => (
                        <div key={lbl} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem", background: "var(--surface-container-low)", borderRadius: "var(--r-md)" }}>
                           <div style={{ width: 32, height: 32, borderRadius: "50%", background: "white", display: "flex", alignItems: "center", justifyContent: "center", color: i === 1 ? "var(--error)" : "var(--primary)" }}>
                              <i className="ms" style={{ fontSize: 16 }}>{ic}</i>

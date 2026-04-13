@@ -50,7 +50,7 @@ export function JobCard({ job, bookmarked, onBookmark, delay = 0 }: any) {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "1rem", borderTop: "1px solid rgba(194,198,216,.20)", gap: "1rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>
-                <i className="ms" style={{ fontSize: 15 }}>schedule</i> {job.postedAgo || "Recently"}
+                <i className="ms" style={{ fontSize: 15 }}>schedule</i> {job.postingDate || job.postedAgo || "Recently"}
               </span>
               <span style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.8125rem", color: job.urgent ? "var(--tertiary)" : "var(--on-surface-variant)", fontWeight: job.urgent ? 600 : 400 }}>
                 <i className="ms" style={{ fontSize: 15 }}>event</i> {job.deadline || "Open"}
