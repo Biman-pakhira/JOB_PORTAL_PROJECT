@@ -39,6 +39,7 @@ async function processExcelJobUpload(fileBuffer, prisma, category = 'Private') {
         const experience = col(row, 'experience', 'exp', 'years of experience', 'yoe');
         const qualifications = col(row, 'qualifications', 'qualification', 'eligibility', 'requirements');
         const postingDate = col(row, 'posting date', 'date', 'posted on', 'postingdate', 'post date');
+        const postedAgo = col(row, 'postedago', 'posted ago', 'time');
         let skills = col(row, 'skills', 'skill', 'required skills', 'tech stack', 'technologies', 'tech stack (skills)') || '';
         const url = col(row, 'url', 'link', 'apply link', 'apply url', 'apply');
 
@@ -54,6 +55,7 @@ async function processExcelJobUpload(fileBuffer, prisma, category = 'Private') {
             experience,
             postingDate,
             category,
+            postedAgo,
             isActive: true
         };
 
