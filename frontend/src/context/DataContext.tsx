@@ -53,16 +53,39 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const fetchUserProfile = useCallback(async (token: string) => {
+    try {
+      const apiUrl = getApiUrl();
+      const res = await fetch(`${apiUrl}/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const fullUser = await res.json();
+        setUser(fullUser);
+        localStorage.setItem("userData", JSON.stringify(fullUser));
+      } else if (res.status === 401) {
+        logout();
+      }
+    } catch (err) {
+      console.error("Failed to fetch user profile:", err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
     if (typeof window !== "undefined") {
+      const token = localStorage.getItem("userToken");
       const savedUser = localStorage.getItem("userData");
       if (savedUser) setUser(JSON.parse(savedUser));
+      
+      if (token) {
+        fetchUserProfile(token);
+      }
       
       const adminToken = localStorage.getItem("adminToken");
       setIsAdmin(!!adminToken);
     }
-  }, [fetchData]);
+  }, [fetchData, fetchUserProfile]);
 
   const toggleBookmark = (id: string) => {
     setBookmarks(prev => {

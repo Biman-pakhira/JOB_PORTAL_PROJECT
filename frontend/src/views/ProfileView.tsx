@@ -43,6 +43,7 @@ export function ProfileView() {
         if (data.user) {
             setUser(data.user);
             setProfile(data.user);
+            localStorage.setItem("userData", JSON.stringify(data.user));
         }
     } catch (err) { console.error(err); }
   };
@@ -62,7 +63,9 @@ export function ProfileView() {
         });
         const data = await res.json();
         if (data.resumeUrl) {
-            setUser({ ...user, resumeUrl: data.resumeUrl, resumeName: data.resumeName });
+            const updated = { ...user, resumeUrl: data.resumeUrl, resumeName: data.resumeName };
+            setUser(updated);
+            localStorage.setItem("userData", JSON.stringify(updated));
         }
     } catch (err) { console.error(err); }
     setUploading(false);
@@ -82,7 +85,9 @@ export function ProfileView() {
         });
         const data = await res.json();
         if (data.profileImage) {
-            setUser({ ...user, profileImage: data.profileImage });
+            const updated = { ...user, profileImage: data.profileImage };
+            setUser(updated);
+            localStorage.setItem("userData", JSON.stringify(updated));
         }
     } catch (err) { console.error(err); }
   };
