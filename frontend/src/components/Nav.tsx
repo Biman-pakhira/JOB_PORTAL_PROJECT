@@ -1,6 +1,5 @@
-"use client";
 import React from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 export function Nav({ activePage, user, onLogout, isAdmin }: any) {
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -32,7 +31,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
           <i className="ms" style={{ fontSize: 28, color: "var(--on-surface)" }}>menu</i>
         </button>
 
-        <Link href="/" style={{
+        <Link to="/" style={{
           display: "flex", alignItems: "center", textDecoration: "none"
         }}>
           <img src="/logo.png" alt="Jobs Today" style={{ height: 180, width: "auto" }} />
@@ -42,7 +41,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
       {/* Desktop Links (Hidden on Mobile) */}
       <div className="mobile-hide" style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
         {links.map(l => (
-          <Link key={l.href} href={l.href}
+          <Link key={l.href} to={l.href}
             style={{
               fontSize: "0.875rem", fontWeight: currentRoute === l.href ? 700 : 500,
               color: currentRoute === l.href ? "var(--primary)" : "var(--on-surface-variant)",
@@ -60,10 +59,10 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
               {(user?.id || isAdmin) ? (
                 <button onClick={onLogout} style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--error)" }}>Sign Out</button>
               ) : (
-                <Link href="/auth" style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--on-surface-variant)" }}>Login</Link>
+                <Link to="/auth" style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--on-surface-variant)" }}>Login</Link>
               )}
               {isAdmin && (
-                <Link href="/admin" style={{
+                <Link to="/admin" style={{
                   padding: "0.5rem 1.125rem", borderRadius: "var(--r-md)",
                   fontSize: "0.8125rem", fontWeight: 700, color: "var(--on-primary)",
                   background: "var(--primary)"
@@ -74,7 +73,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
         </div>
 
         {/* Profile / Avatar */}
-        <Link href={user ? "/profile" : "/auth"} style={{
+        <Link to={user ? "/profile" : "/auth"} style={{
           width: 36, height: 36, borderRadius: "50%", overflow: "hidden",
           display: "flex", alignItems: "center", justifyContent: "center",
           background: "var(--surface-container-high)", border: "1.5px solid var(--primary)33"
@@ -115,7 +114,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
           <div style={{ fontSize: "0.875rem", color: "#727687", padding: "0 1.5rem 0.5rem" }}>Navigation</div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {links.map(l => (
-              <Link key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
+              <Link key={l.href} to={l.href} onClick={() => setMenuOpen(false)}
                 style={{
                   padding: "1.125rem 1.5rem", borderBottom: "1px solid #e8e8e8", borderTop: l === links[0] ? "1px solid #e8e8e8" : "none",
                   fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", textDecoration: "none", 
@@ -141,7 +140,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
                       Signed in as {isAdmin ? "Admin" : user?.name}
                     </div>
                     {isAdmin && (
-                      <Link href="/admin" onClick={() => setMenuOpen(false)} style={{
+                      <Link to="/admin" onClick={() => setMenuOpen(false)} style={{
                         padding: "1.125rem 1.5rem", borderBottom: "1px solid #e8e8e8",
                         fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", textDecoration: "none", display: "flex", justifyContent: "space-between"
                       }}>
@@ -159,7 +158,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
                     </button>
                   </>
                 ) : (
-                  <Link href="/auth" onClick={() => setMenuOpen(false)} style={{
+                  <Link to="/auth" onClick={() => setMenuOpen(false)} style={{
                     padding: "1.125rem 1.5rem", borderBottom: "1px solid #e8e8e8", borderTop: "1px solid #e8e8e8",
                     fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", textDecoration: "none", display: "flex", justifyContent: "space-between"
                   }}>

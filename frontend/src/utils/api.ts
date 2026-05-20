@@ -1,11 +1,18 @@
 /**
  * Centralized utility to resolve the API URL based on the environment.
- * Prioritizes the NEXT_PUBLIC_API_URL environment variable.
+ * Prioritizes the VITE_API_URL or NEXT_PUBLIC_API_URL environment variables.
  */
 export const getApiUrl = () => {
-    // If an environment variable is explicitly provided, use it.
-    if (process.env.NEXT_PUBLIC_API_URL) {
-        return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
+    // Vite standard environment variable
+    const viteApiUrl = (import.meta as any).env?.VITE_API_URL;
+    if (viteApiUrl) {
+        return viteApiUrl.replace(/\/$/, '');
+    }
+
+    // Next.js fallback (if running in a hybrid environment)
+    const nextApiUrl = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL;
+    if (nextApiUrl) {
+        return nextApiUrl.replace(/\/$/, '');
     }
 
     // Fallback logic for client-side resolution
@@ -20,6 +27,5 @@ export const getApiUrl = () => {
         return '/api';
     }
 
-    // Default for SSR
     return 'http://localhost:5001/api';
 };

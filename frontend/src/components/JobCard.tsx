@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 export function JobCard({ job, bookmarked, onBookmark, delay = 0 }: any) {
   const [hovered, setHovered] = useState(false);
   return (
-    <Link href={`/jobs/${job.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+    <Link to={`/jobs/${job.id}`} style={{ textDecoration: "none", color: "inherit" }}>
       <article
         className={`fade-up`}
         style={{

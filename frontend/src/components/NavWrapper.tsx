@@ -1,12 +1,11 @@
-"use client";
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocation } from "react-router-dom";
 import { Nav } from "./Nav";
 import { useData } from "../context/DataContext";
 
 export function NavWrapper() {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   const { user, logout, isAdmin } = useData();
   
   // Map pathname to activePage

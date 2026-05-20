@@ -1,10 +1,9 @@
-"use client";
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 
 export function BottomNav() {
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   
   const navItems = [
     { label: "HOME", icon: "home", href: "/" },
@@ -25,7 +24,7 @@ export function BottomNav() {
       {navItems.map(item => {
         const isActive = pathname === item.href;
         return (
-          <Link key={item.href} href={item.href} style={{
+          <Link key={item.href} to={item.href} style={{
             display: "flex", flexDirection: "column", alignItems: "center", gap: "0.25rem",
             color: isActive ? "var(--primary)" : "var(--on-surface-variant)",
             textDecoration: "none", minWidth: 64, transition: "color 0.2s"

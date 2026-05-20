@@ -1,7 +1,6 @@
 // @ts-nocheck
-"use client";
 import React, { useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
   if (!job) return <div style={{ paddingTop: 120, textAlign: "center" }}>Job not found</div>;

@@ -1,8 +1,7 @@
-"use client";
 import React, { useState } from "react";
 import { JobCard } from "../components/JobCard";
 import { useData } from "../context/DataContext";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 
 export function HomeView() {
   const { jobs, bookmarks, toggleBookmark } = useData();
@@ -70,7 +69,7 @@ export function HomeView() {
       <section style={{ padding: "0 var(--content-pad)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
           <h2 style={{ fontSize: "1.25rem", fontWeight: 800 }}>Latest Opportunities</h2>
-          <Link href="/browse" style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--primary)" }}>View all</Link>
+          <Link to="/browse" style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--primary)" }}>View all</Link>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -109,7 +108,7 @@ export function HomeView() {
             <p style={{ fontSize: "0.875rem", color: "var(--on-surface-variant)", lineHeight: 1.6, marginBottom: "1.5rem" }}>
                 Users with 100% complete profiles are 4x more likely to get noticed by recruiters.
             </p>
-            <Link href="/profile" style={{
+            <Link to="/profile" style={{
                 display: "inline-flex", alignItems: "center", gap: "0.5rem",
                 padding: "0.875rem 2rem", borderRadius: "var(--r-md)", 
                 background: "var(--primary)", color: "white", fontWeight: 800, textDecoration: "none"

@@ -21,7 +21,9 @@ export function AdminPage() {
   const [showManualJobForm, setShowManualJobForm] = useState(false);
   const [showManualUpdateForm, setShowManualUpdateForm] = useState(false);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+  const apiUrl = (import.meta as any).env?.VITE_API_URL || 
+                 process.env.NEXT_PUBLIC_API_URL || 
+                 'http://localhost:5001/api';
 
   useEffect(() => {
     if (typeof window !== "undefined") setToken(localStorage.getItem("adminToken") || "");
