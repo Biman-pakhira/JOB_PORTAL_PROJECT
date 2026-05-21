@@ -1,4 +1,4 @@
-"use client";
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { getApiUrl } from "../utils/api";
 
@@ -12,7 +12,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Sync bookmarks with localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("job_bookmarks");

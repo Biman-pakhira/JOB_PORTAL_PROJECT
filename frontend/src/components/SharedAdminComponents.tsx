@@ -1,5 +1,5 @@
 // @ts-nocheck
-"use client";
+
 import React, { useState, useRef } from "react";
 import { JOB_COLUMNS, UPDATE_COLUMNS } from "../constants/tokens";
 

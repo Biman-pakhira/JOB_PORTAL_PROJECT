@@ -1,5 +1,5 @@
 // @ts-nocheck
-"use client";
+
 import React from "react";
 
 export function UpdateCard({ update, delay = 0 }: any) {

@@ -1,4 +1,4 @@
-"use client";
+
 import React, { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
 import { JOB_COLUMNS, UPDATE_COLUMNS } from "../constants/tokens";
