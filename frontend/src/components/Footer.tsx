@@ -1,5 +1,4 @@
 // @ts-nocheck
-"use client";
 import React from "react";
 
 export function Footer() {
@@ -51,7 +50,7 @@ export function Footer() {
         </div>
       </div>
       <div className="stack-on-mobile" style={{ maxWidth: 1280, margin: "0 auto", padding: "1.5rem var(--content-pad)", display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid rgba(194,198,216,.25)" }}>
-        <p className="footer-text" style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>© 2024 The Editorial Architect. All rights reserved.</p>
+        <p className="footer-text" style={{ fontSize: "0.8125rem", color: "var(--on-surface-variant)" }}>© 2025 The Jobs Today. All rights reserved.</p>
         <div style={{ display: "flex", gap: "1rem" }}>
           {["share", "language"].map(icon => (
             <button key={icon} style={{ width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--on-surface-variant)", cursor: "pointer" }}>
