@@ -100,7 +100,6 @@ router.post('/admin/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        // Check password
         const isMatch = await bcrypt.compare(password, admin.password);
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid credentials' });
@@ -117,10 +116,11 @@ router.post('/admin/login', async (req, res) => {
 router.post('/admin/setup', async (req, res) => {
     try {
         const { email, password, masterKey } = req.body;
-        
-        // Security check: Master Key must match environmental variable
-        const secret = process.env.ADMIN_MASTER_KEY || "architect-master-2024"; 
-        if (masterKey !== secret) {
+
+        if (!process.env.ADMIN_MASTER_KEY) {
+            return res.status(500).json({ error: 'Server misconfiguration: ADMIN_MASTER_KEY is not set.' });
+        }
+        if (masterKey !== process.env.ADMIN_MASTER_KEY) {
             return res.status(403).json({ error: 'Invalid master key. Registration denied.' });
         }
 
@@ -136,7 +136,7 @@ router.post('/admin/setup', async (req, res) => {
             return res.status(400).json({ error: 'Admin already exists' });
         }
         const hash = await bcrypt.hash(password, 10);
-        const admin = await prisma.admin.create({
+        await prisma.admin.create({
             data: { email, password: hash }
         });
         res.json({ message: 'Admin created successfully' });
@@ -212,7 +212,6 @@ router.post('/auth/google', async (req, res) => {
         const { credential } = req.body;
         if (!credential) return res.status(400).json({ error: 'No credential provided' });
 
-        // Verify the ID token from Google
         const ticket = await client.verifyIdToken({
             idToken: credential,
             audience: process.env.GOOGLE_CLIENT_ID,
@@ -222,7 +221,6 @@ router.post('/auth/google', async (req, res) => {
         let user = await prisma.user.findUnique({ where: { email } });
 
         if (user) {
-            // Update user with googleId if not already present
             if (!user.googleId) {
                 user = await prisma.user.update({
                     where: { email },
@@ -230,7 +228,6 @@ router.post('/auth/google', async (req, res) => {
                 });
             }
         } else {
-            // Create a new user without a password
             user = await prisma.user.create({
                 data: {
                     name,
@@ -266,7 +263,6 @@ router.get('/jobs', async (req, res) => {
     try {
         const { search, type, location } = req.query;
 
-        // Construct Prisma where clause dynamically based on search params
         const where = { isActive: true };
         if (search) {
             where.title = { contains: search, mode: 'insensitive' };
@@ -323,9 +319,7 @@ router.post('/admin/jobs/upload', verifyAdmin, upload.single('file'), async (req
     }
 
     try {
-        console.log('Upload received. Body:', req.body);
         const category = req.body.category || 'Private';
-        console.log('Processing with category:', category);
         const result = await processExcelJobUpload(req.file.buffer, prisma, category);
         res.json(result);
     } catch (error) {
@@ -339,7 +333,6 @@ router.post('/admin/jobs', verifyAdmin, async (req, res) => {
     try {
         const { id, title, company, location, type, salary, description, skills, qualifications, url, experience, postingDate, category, urgent, logo, logoColor, deadline, postedAgo } = req.body;
         
-        // Construct the data object with only valid schema fields
         const jobData = {
             title, company, location, type, salary, description, skills, qualifications,
             url, experience, postingDate, category,
@@ -349,9 +342,7 @@ router.post('/admin/jobs', verifyAdmin, async (req, res) => {
             isActive: true
         };
 
-        const job = await prisma.job.create({
-            data: jobData
-        });
+        const job = await prisma.job.create({ data: jobData });
         res.json({ message: 'Job created successfully', job });
     } catch (error) {
         handlePrismaError(error, res);
@@ -361,7 +352,6 @@ router.post('/admin/jobs', verifyAdmin, async (req, res) => {
 // Admin Route: Individual Job Update
 router.patch('/admin/jobs/:id', verifyAdmin, async (req, res) => {
     try {
-        // Filter out read-only fields that Prisma/MongoDB won't allow in an update() 'data' block
         const { id, createdAt, updatedAt, applications, ...updateData } = req.body;
         
         const updated = await prisma.job.update({
@@ -381,57 +371,6 @@ router.delete('/admin/jobs/:id', verifyAdmin, async (req, res) => {
             where: { id: req.params.id }
         });
         res.json({ message: 'Job deleted successfully' });
-    } catch (error) {
-        handlePrismaError(error, res);
-    }
-});
-
-// Admin Route: Seed Sample Data
-router.post('/admin/jobs/seed', verifyAdmin, async (req, res) => {
-    const seedJobs = [
-        {"title":"Frontend Developer","company":"Tech Corp","location":"New York, NY","type":"Full-time","salary":"$100k - $120k","description":"Looking for a skilled Next.js developer to join our team.","skills":"React, Next.js, Tailwind CSS","url":"https://example.com/apply/frontend","category":"Private","isActive":true},
-        {"title":"Backend Engineer","company":"Data Systems Inc","location":"San Francisco, CA (Remote)","type":"Contract","salary":"$130k - $150k","description":"Design and build scalable Node.js microservices processing large datasets.","skills":"Node.js, Express, MongoDB, Prisma","url":"https://example.com/apply/backend","category":"Private","isActive":true},
-        {"title":"UI/UX Designer","company":"Creative Studio","location":"London, UK","type":"Part-time","salary":"£40k - £50k","description":"Create amazing user experiences and interfaces for our new product line.","skills":"Figma, Adobe XD, Design Systems","url":"https://example.com/apply/designer","category":"Private","isActive":true},
-        {"title":"Software Engineer Intern","company":"StartupX","location":"Remote","type":"Internship","salary":"$20/hr","description":"Great opportunity to learn and grow in a fast-paced environment.","skills":"JavaScript, HTML, CSS","url":"https://example.com/apply/intern","category":"Private","isActive":true},
-        {"title":"DevOps Engineer","company":"Cloud Native LLC","location":"Austin, TX","type":"Full-time","salary":"$120k - $140k","description":"Manage our cloud infrastructure and CI/CD pipelines.","skills":"AWS, Docker, Kubernetes, CI/CD","url":"https://example.com/apply/devops","category":"Private","isActive":true},
-        {"title":"React Developer","company":"WebStudio","location":"Remote","type":"Full-time","salary":"$90k - $120k","description":"Build beautiful UIs with React and Tailwind.","skills":"React, CSS, HTML","url":"https://example.com/apply/react","category":"Private","isActive":true},
-        {"title":"Cloud Architect","company":"SkyData","location":"Global","type":"Contract","salary":"$160k+","description":"Lead our transition to serverless architecture.","skills":"AWS, Serverless, Node.js","url":"https://example.com/apply/cloud","category":"Private","isActive":true},
-        {"title":"Data Scientist","company":"BrainyAI","location":"San Francisco","type":"Full-time","salary":"$140k - $180k","description":"Train LLMs and build data pipelines.","skills":"Python, PyTorch, SQL","url":"https://example.com/apply/data","category":"Private","isActive":true},
-        {"title":"Sr. Frontend Engineer","company":"TechCorp","location":"Remote","type":"Full-time","salary":"₹24,00,000","skills":"React, Next.js, Tailwind","url":"https://example.com/apply/sr-frontend","category":"Private","isActive":true},
-        {"title":"Assistant Manager","company":"State Bank of India","location":"Mumbai","type":"Govt-Full","salary":"₹8,50,000","skills":"Finance, Aptitude","url":"https://sbi.co.in/careers","category":"Govt","isActive":true},
-        {"title":"Backend Developer","company":"GrowthScale","location":"Bangalore","type":"Full-time","salary":"₹18,00,000","skills":"Node.js, PostgreSQL","url":"https://example.com/apply/growthscale","category":"Private","isActive":true},
-        {"title":"Product Designer","company":"Designly","location":"Delhi (NCR)","type":"Hybrid","salary":"₹12,00,000","skills":"Figma, UI/UX","url":"https://example.com/apply/designly","category":"Private","isActive":true},
-        {"title":"Junior Engineer","company":"Indian Railways","location":"Kolkata","type":"Govt-Full","salary":"₹5,40,000","skills":"Civil Engineering","url":"https://indianrailways.gov.in","category":"Govt","isActive":true},
-        {"title":"Full Stack Intern","company":"StartupX","location":"Remote","type":"Internship","salary":"₹2,40,000","skills":"MERN Stack, Git","url":"https://example.com/apply/startupx-intern","category":"Private","isActive":true},
-        {"title":"AI Solutions Data Scientist","company":"AI Solutions","location":"Hyderabad","type":"Full-time","salary":"₹20,00,000","skills":"Python, SQL","url":"https://example.com/apply/ai-solutions","category":"Private","isActive":true},
-        {"title":"Marketing Head","company":"BrandNew","location":"Pune","type":"Full-time","salary":"₹30,00,000","skills":"Brand Strategy","url":"https://example.com/apply/brandnew-marketing","category":"Private","isActive":true},
-        {"title":"Staff Nurse","company":"AIIMS","location":"Rishikesh","type":"Govt-Full","salary":"₹7,80,000","skills":"Healthcare, Nursing","url":"https://aiimsrishikesh.edu.in","category":"Govt","isActive":true},
-        {"title":"DevOps Lead","company":"CloudOps","location":"Pune","type":"Full-time","salary":"₹28,00,000","skills":"AWS, Docker, K8s","url":"https://example.com/apply/cloudops-devops","category":"Private","isActive":true},
-        {"title":"Cloud Architect","company":"SkyScale Systems","location":"Remote","type":"Full-time","salary":"₹35,00,000","skills":"AWS, Terraform, Kubernetes","url":"https://example.com/apply/skyscale-cloud","category":"Private","isActive":true},
-        {"title":"Staff Nurse (Delhi)","company":"AIIMS Delhi","location":"New Delhi","type":"Govt-Full","salary":"₹7,20,000","skills":"Clinical Care, ICU, Patient Management","url":"https://aiims.edu","category":"Govt","isActive":true},
-        {"title":"QA Engineer","company":"BugSquashers","location":"Pune","type":"Full-time","salary":"₹11,00,000","skills":"Selenium, Cypress, Manual Testing","url":"https://example.com/apply/bugsquashers-qa","category":"Private","isActive":true},
-        {"title":"Probationary Officer","company":"Bank of Baroda","location":"PAN India","type":"Sarkari","salary":"₹6,50,000","skills":"Logical Reasoning, Banking, GK","url":"https://bankofbaroda.in/careers","category":"Govt","isActive":true},
-        {"title":"UI Developer","company":"Pixel Perfect","location":"Bangalore","type":"Contract","salary":"₹14,00,000","skills":"Vue.js, SCSS, Framer Motion","url":"https://example.com/apply/pixelperfect-ui","category":"Private","isActive":true},
-        {"title":"Data Analyst","company":"InsightFlow","location":"Hyderabad","type":"Hybrid","salary":"₹9,00,000","skills":"SQL, PowerBI, Tableau","url":"https://example.com/apply/insightflow-data","category":"Private","isActive":true},
-        {"title":"Security Officer","company":"CISF","location":"Various","type":"Govt-Full","salary":"₹4,80,000","skills":"Public Safety, Physical Training","url":"https://cisf.gov.in","category":"Govt","isActive":true},
-        {"title":"Backend Lead","company":"FinTech Go","location":"Mumbai","type":"Full-time","salary":"₹32,00,000","skills":"Go, Microservices, gRPC","url":"https://example.com/apply/fintechgo-backend","category":"Private","isActive":true},
-        {"title":"SEO Specialist","company":"RankUp Agency","location":"Remote","type":"Part-time","salary":"₹5,00,000","skills":"Google Analytics, Keyword Research","url":"https://example.com/apply/rankup-seo","category":"Private","isActive":true},
-        {"title":"Graduate Trainee","company":"ONGC","location":"Dehradun","type":"Govt-Full","salary":"₹12,00,000","skills":"GATE Score, Engineering Fundamentals","url":"https://ongcindia.com","category":"Govt","isActive":true},
-        {"title":"Test Govt Listing","company":"Govt Agency","location":"Delhi","type":"Govt-Full","salary":null,"skills":"","url":"http://test.link","category":"Govt","isActive":true}
-    ];
-
-    try {
-        let added = 0;
-        for (const job of seedJobs) {
-            const existing = await prisma.job.findFirst({
-                where: { title: job.title, company: job.company }
-            });
-            if (!existing) {
-                await prisma.job.create({ data: job });
-                added++;
-            }
-        }
-        res.json({ message: `Successfully seeded ${added} job listings.` });
     } catch (error) {
         handlePrismaError(error, res);
     }
@@ -558,7 +497,6 @@ router.post('/applications', verifyUser, async (req, res) => {
         const { jobId } = req.body;
         if (!jobId) return res.status(400).json({ error: 'jobId is required' });
 
-        // Prevent duplicate applications
         const existing = await prisma.application.findFirst({
             where: { userId: req.userId, jobId }
         });
