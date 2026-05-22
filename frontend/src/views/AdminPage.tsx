@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import { JOB_COLUMNS, UPDATE_COLUMNS } from "../constants/tokens";
 import { Toast, DropZone, DataTable, AddJobForm, AddUpdateForm } from "../components/SharedAdminComponents";
 import { useData } from "../context/DataContext";
+import { getApiUrl } from "../utils/api";
 
 export function AdminPage() {
   const { jobs, updates, fetchData, loading: dataLoading } = useData();
@@ -21,9 +22,7 @@ export function AdminPage() {
   const [showManualJobForm, setShowManualJobForm] = useState(false);
   const [showManualUpdateForm, setShowManualUpdateForm] = useState(false);
 
-  const apiUrl = (import.meta as any).env?.VITE_API_URL || 
-                 process.env.NEXT_PUBLIC_API_URL || 
-                 'http://localhost:5001/api';
+  const apiUrl = getApiUrl();
 
   useEffect(() => {
     if (typeof window !== "undefined") setToken(localStorage.getItem("adminToken") || "");
