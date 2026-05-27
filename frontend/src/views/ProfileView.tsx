@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from "react";
-import { useData } from "../context/DataContext";
+import { useData, type User } from "../context/DataContext";
 import { getApiUrl } from "../utils/api";
 
 export function ProfileView() {
   const { user, setUser, logout } = useData();
-  const [profile, setProfile] = useState<any>(user || {});
+  const [profile, setProfile] = useState<User>(user || {} as User);
   const [applications, setApplications] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("Activity");
   const [uploading, setUploading] = useState(false);
@@ -63,7 +63,7 @@ export function ProfileView() {
         });
         const data = await res.json();
         if (data.resumeUrl) {
-            const updated = { ...user, resumeUrl: data.resumeUrl, resumeName: data.resumeName };
+            const updated = { ...user, resumeUrl: data.resumeUrl, resumeName: data.resumeName } as User;
             setUser(updated);
             localStorage.setItem("userData", JSON.stringify(updated));
         }
@@ -85,7 +85,7 @@ export function ProfileView() {
         });
         const data = await res.json();
         if (data.profileImage) {
-            const updated = { ...user, profileImage: data.profileImage };
+            const updated = { ...user, profileImage: data.profileImage } as User;
             setUser(updated);
             localStorage.setItem("userData", JSON.stringify(updated));
         }
@@ -93,7 +93,7 @@ export function ProfileView() {
   };
 
   // Calculate completion %
-  const fields = ['profileImage', 'headline', 'location', 'phone', 'topSkills', 'resumeUrl', 'preferredSalary', 'desiredRole'];
+  const fields: (keyof User)[] = ['profileImage', 'headline', 'location', 'phone', 'topSkills', 'resumeUrl', 'preferredSalary', 'desiredRole'];
   const filled = fields.filter(f => !!profile[f]).length;
   const completionPercent = Math.round((filled / fields.length) * 100);
 

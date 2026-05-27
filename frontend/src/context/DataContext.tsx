@@ -2,13 +2,85 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { getApiUrl } from "../utils/api";
 
-const DataContext = createContext<any>(null);
+// ── Domain types ─────────────────────────────────────────────────────────────
+
+export interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location?: string;
+  type?: string;
+  salary?: string;
+  description?: string;
+  skills?: string;
+  qualifications?: string;
+  url?: string;
+  experience?: string;
+  postingDate?: string;
+  category?: string;
+  urgent?: boolean;
+  logo?: string;
+  logoColor?: string;
+  deadline?: string;
+  postedAgo?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Update {
+  id: string;
+  title: string;
+  date?: string;
+  type?: string;
+  body?: string;
+  createdAt?: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  profileImage?: string;
+  headline?: string;
+  location?: string;
+  phone?: string;
+  topSkills?: string;
+  preferredSalary?: string;
+  workSetting?: string;
+  desiredRole?: string;
+  industryFocus?: string;
+  openToWork?: boolean;
+  resumeUrl?: string;
+  resumeName?: string;
+}
+
+export interface DataContextValue {
+  jobs: Job[];
+  setJobs: React.Dispatch<React.SetStateAction<Job[]>>;
+  updates: Update[];
+  setUpdates: React.Dispatch<React.SetStateAction<Update[]>>;
+  bookmarks: Set<string>;
+  toggleBookmark: (id: string) => void;
+  user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isAdmin: boolean;
+  setIsAdmin: React.Dispatch<React.SetStateAction<boolean>>;
+  logout: () => void;
+  loading: boolean;
+  fetchData: () => Promise<void>;
+}
+
+// ── Context ──────────────────────────────────────────────────────────────────
+
+const DataContext = createContext<DataContextValue | null>(null);
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [updates, setUpdates] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [updates, setUpdates] = useState<Update[]>([]);
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +131,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
-        const fullUser = await res.json();
+        const fullUser: User = await res.json();
         setUser(fullUser);
         localStorage.setItem("userData", JSON.stringify(fullUser));
       } else if (res.status === 401) {
@@ -116,4 +188,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useData = () => useContext(DataContext);
+export const useData = (): DataContextValue => {
+  const ctx = useContext(DataContext);
+  if (!ctx) throw new Error("useData must be used within a DataProvider");
+  return ctx;
+};

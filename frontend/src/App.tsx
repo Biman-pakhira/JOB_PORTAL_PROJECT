@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from "react-router-dom";
-import { DataProvider, useData } from "./context/DataContext";
+import { DataProvider, useData, type Job, type User } from "./context/DataContext";
 import { GoogleAuthProvider } from "./components/GoogleAuthProvider";
 import { NavWrapper } from "./components/NavWrapper";
 import { Footer } from "./components/Footer";
 import { BottomNav } from "./components/BottomNav";
 import { TOKENS } from "./constants/tokens";
+import { SkeletonList } from "./components/SkeletonCard";
 
 // Views
 import { HomeView } from "./views/HomeView";
@@ -24,8 +25,9 @@ function HomeRoute() {
 
   if (loading) {
     return (
-      <main style={{ paddingTop: 120, textAlign: "center", color: "var(--on-surface-variant)" }}>
-        <p>Fetching opportunities...</p>
+      <main style={{ paddingTop: 120, paddingLeft: "var(--content-pad)", paddingRight: "var(--content-pad)", maxWidth: 1280, margin: "0 auto" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--on-surface)" }}>Fetching opportunities...</h2>
+        <SkeletonList count={4} />
       </main>
     );
   }
@@ -38,8 +40,9 @@ function BrowseRoute() {
 
   if (loading) {
     return (
-      <main style={{ paddingTop: 120, textAlign: "center", color: "var(--on-surface-variant)" }}>
-        <p>Loading jobs...</p>
+      <main style={{ paddingTop: 120, paddingLeft: "var(--content-pad)", paddingRight: "var(--content-pad)", maxWidth: 1280, margin: "0 auto" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--on-surface)" }}>Loading all jobs...</h2>
+        <SkeletonList count={5} />
       </main>
     );
   }
@@ -58,7 +61,14 @@ function BrowseRoute() {
 function GovtJobsRoute() {
   const { jobs, bookmarks, toggleBookmark, loading } = useData();
 
-  if (loading) return <main style={{ paddingTop: 88, textAlign: "center" }}><p>Loading...</p></main>;
+  if (loading) {
+    return (
+      <main style={{ paddingTop: 120, paddingLeft: "var(--content-pad)", paddingRight: "var(--content-pad)", maxWidth: 1280, margin: "0 auto" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--on-surface)" }}>Loading government jobs...</h2>
+        <SkeletonList count={4} />
+      </main>
+    );
+  }
 
   return (
     <SectorPage 
@@ -75,7 +85,14 @@ function GovtJobsRoute() {
 function PrivateSectorRoute() {
   const { jobs, bookmarks, toggleBookmark, loading } = useData();
 
-  if (loading) return <main style={{ paddingTop: 88, textAlign: "center" }}><p>Loading...</p></main>;
+  if (loading) {
+    return (
+      <main style={{ paddingTop: 120, paddingLeft: "var(--content-pad)", paddingRight: "var(--content-pad)", maxWidth: 1280, margin: "0 auto" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--on-surface)" }}>Loading private sector jobs...</h2>
+        <SkeletonList count={4} />
+      </main>
+    );
+  }
 
   return (
     <SectorPage 
@@ -92,12 +109,13 @@ function PrivateSectorRoute() {
 function SavedRoute() {
   const { jobs, bookmarks, toggleBookmark, loading } = useData();
 
-  const savedJobs = jobs.filter((j: any) => bookmarks.has(j.id));
+  const savedJobs = jobs.filter((j: Job) => bookmarks.has(j.id));
 
   if (loading) {
     return (
-      <main style={{ paddingTop: 120, textAlign: "center", color: "var(--on-surface-variant)" }}>
-        <p>Loading bookmarks...</p>
+      <main style={{ paddingTop: 120, paddingLeft: "var(--content-pad)", paddingRight: "var(--content-pad)", maxWidth: 1280, margin: "0 auto" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 800, marginBottom: "1.5rem", color: "var(--on-surface)" }}>Loading bookmarks...</h2>
+        <SkeletonList count={3} />
       </main>
     );
   }
@@ -148,7 +166,7 @@ function AuthRoute() {
 
   return (
     <AuthView 
-      onAuthSuccess={(u: any) => { 
+      onAuthSuccess={(u: User) => { 
         setUser(u); 
         navigate("/"); 
       }} 
@@ -160,7 +178,7 @@ function AuthRoute() {
 function JobRoute() {
   const { id } = useParams();
   const { bookmarks, toggleBookmark } = useData();
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,29 +1,23 @@
 /**
  * Centralized utility to resolve the API URL based on the environment.
- * Prioritizes the VITE_API_URL or NEXT_PUBLIC_API_URL environment variables.
+ * Reads VITE_API_URL set in .env.local / .env.production.
  */
 export const getApiUrl = () => {
-    // Vite standard environment variable
+    // Vite environment variable (set in .env.local or .env.production)
     const viteApiUrl = (import.meta as any).env?.VITE_API_URL;
     if (viteApiUrl) {
         return viteApiUrl.replace(/\/$/, '');
     }
 
-    // Next.js fallback (if running in a hybrid environment)
-    const nextApiUrl = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL;
-    if (nextApiUrl) {
-        return nextApiUrl.replace(/\/$/, '');
-    }
-
-    // Fallback logic for client-side resolution
+    // Fallback: client-side hostname detection
     if (typeof window !== 'undefined') {
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        
+
         if (isLocal) {
             return 'http://localhost:5001/api';
         }
 
-        // If on a live domain, assume the API is at /api (same project)
+        // On a live domain assume API is served at /api (same origin)
         return '/api';
     }
 

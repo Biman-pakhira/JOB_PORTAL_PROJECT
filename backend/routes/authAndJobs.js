@@ -2,8 +2,6 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const { PrismaClient } = require('@prisma/client');
 const { OAuth2Client } = require('google-auth-library');
 const { processExcelJobUpload, processExcelUpdateUpload } = require('../controllers/excelController');
@@ -28,22 +26,12 @@ const handlePrismaError = (error, res) => {
     res.status(500).json({ error: 'Internal server error' });
 };
 
-const upload = multer({ storage: multer.memoryStorage() }); // In-memory storage for Excel parsing
+// All uploads use in-memory storage — Vercel has a read-only filesystem.
+// Files are converted to base64 data URLs and stored in MongoDB.
+const upload = multer({ storage: multer.memoryStorage() });
 
-// PDF disk storage for resumes
-const resumeStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '../uploads/resumes');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `resume_${req.userId}_${Date.now()}${ext}`);
-    }
-});
 const resumeUpload = multer({
-    storage: resumeStorage,
+    storage: multer.memoryStorage(),
     fileFilter: (req, file, cb) => {
         if (file.mimetype === 'application/pdf') cb(null, true);
         else cb(new Error('Only PDF files are allowed'));
@@ -51,20 +39,8 @@ const resumeUpload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // 5 MB cap
 });
 
-// Image storage for profile pictures
-const avatarStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '../uploads/avatars');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, `avatar_${req.userId}_${Date.now()}${ext}`);
-    }
-});
 const avatarUpload = multer({
-    storage: avatarStorage,
+    storage: multer.memoryStorage(),
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) cb(null, true);
         else cb(new Error('Only image files are allowed'));
@@ -435,13 +411,14 @@ router.put('/profile', verifyUser, async (req, res) => {
     }
 });
 
-// POST: upload profile image
+// POST: upload profile image (stored as base64 data URL in DB)
 router.post('/profile/image', verifyUser, (req, res) => {
     avatarUpload.single('image')(req, res, async (err) => {
         if (err) return res.status(400).json({ error: err.message });
         if (!req.file) return res.status(400).json({ error: 'No image file uploaded' });
         try {
-            const profileImage = `/uploads/avatars/${req.file.filename}`;
+            const base64 = req.file.buffer.toString('base64');
+            const profileImage = `data:${req.file.mimetype};base64,${base64}`;
             await prisma.user.update({
                 where: { id: req.userId },
                 data: { profileImage }
@@ -454,13 +431,14 @@ router.post('/profile/image', verifyUser, (req, res) => {
     });
 });
 
-// POST: upload resume PDF (authenticated user)
+// POST: upload resume PDF (stored as base64 data URL in DB)
 router.post('/resume/upload', verifyUser, (req, res) => {
     resumeUpload.single('resume')(req, res, async (err) => {
         if (err) return res.status(400).json({ error: err.message });
         if (!req.file) return res.status(400).json({ error: 'No PDF file uploaded' });
         try {
-            const resumeUrl = `/uploads/resumes/${req.file.filename}`;
+            const base64 = req.file.buffer.toString('base64');
+            const resumeUrl = `data:application/pdf;base64,${base64}`;
             await prisma.user.update({
                 where: { id: req.userId },
                 data: { resumeUrl, resumeName: req.file.originalname }
