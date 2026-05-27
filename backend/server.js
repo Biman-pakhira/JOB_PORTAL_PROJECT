@@ -38,7 +38,7 @@ app.use(express.static(distPath));
 const platformRoutes = require('./routes/authAndJobs');
 app.use('/api', platformRoutes);
 
-app.get('*', (req, res) => {
+app.get('(.*)', (req, res) => {
   const indexHtmlPath = path.join(distPath, 'index.html');
   if (fs.existsSync(indexHtmlPath)) {
     res.sendFile(indexHtmlPath);
