@@ -39,7 +39,12 @@ const platformRoutes = require('./routes/authAndJobs');
 app.use('/api', platformRoutes);
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
+  const indexHtmlPath = path.join(distPath, 'index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    res.sendFile(indexHtmlPath);
+  } else {
+    res.json({ status: "success", message: "Job Portal API is running successfully." });
+  }
 });
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
