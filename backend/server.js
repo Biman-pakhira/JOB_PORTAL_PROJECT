@@ -4,10 +4,15 @@ const dotenv = require('dotenv');
 const path = require('path');
 const fs = require('fs');
 
-dotenv.config();
+const envPath = path.join(__dirname, '.env');
+dotenv.config({ path: envPath });
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+if (!process.env.DATABASE_URL) {
+  console.warn('[server] DATABASE_URL is not set. Database operations will fail until it is configured.');
+}
 
 const allowedOrigins = [
   'http://localhost:3000',
