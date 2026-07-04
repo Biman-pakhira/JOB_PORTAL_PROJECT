@@ -34,7 +34,7 @@ model Job {
   logo        String?
   logoColor   String?
   deadline    String?
-  postedAgo   DateTime       @default(now())
+  postedAgo   String?       @default("Just now")
   isActive    Boolean       @default(true)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt

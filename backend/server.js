@@ -43,12 +43,12 @@ app.use(express.static(distPath));
 const platformRoutes = require('./routes/authAndJobs');
 app.use('/api', platformRoutes);
 
-app.get('(.*)', (req, res) => {
+app.use((req, res) => {
   const indexHtmlPath = path.join(distPath, 'index.html');
   if (fs.existsSync(indexHtmlPath)) {
     res.sendFile(indexHtmlPath);
   } else {
-    res.json({ status: "success", message: "Job Portal API is running successfully." });
+    res.json({ status: 'success', message: 'Job Portal API is running successfully.' });
   }
 });
 
