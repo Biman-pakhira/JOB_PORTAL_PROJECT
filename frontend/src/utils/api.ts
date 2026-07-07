@@ -14,12 +14,12 @@ export const getApiUrl = () => {
         const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
         if (isLocal) {
-            return 'http://localhost:5001/api';
+            return 'http://localhost:5000/api';
         }
 
         // On a live domain assume API is served at /api (same origin)
         return '/api';
     }
 
-    return 'http://localhost:5001/api';
+    return 'http://localhost:5000/api';
 };

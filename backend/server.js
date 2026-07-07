@@ -11,13 +11,17 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 if (!process.env.DATABASE_URL) {
-  console.warn('[server] DATABASE_URL is not set. Database operations will fail until it is configured.');
+  console.error('[server] CRITICAL: DATABASE_URL is not set. The server will not work until this is configured.');
+  if (!process.env.VERCEL) {
+    console.error('Set DATABASE_URL in your .env file to continue.');
+  }
 }
 
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://jobss.co.in',
+  'https://jobs.co.in',
   process.env.FRONTEND_URL, // optional override from env
 ].filter(Boolean);
 
@@ -34,14 +38,15 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Register API routes BEFORE static file serving
+const platformRoutes = require('./routes/authAndJobs');
+app.use('/api', platformRoutes);
+
 const distPath = fs.existsSync(path.join(__dirname, '../frontend/dist'))
   ? path.join(__dirname, '../frontend/dist')
   : path.join(__dirname, 'dist');
 
 app.use(express.static(distPath));
-
-const platformRoutes = require('./routes/authAndJobs');
-app.use('/api', platformRoutes);
 
 app.use((req, res) => {
   const indexHtmlPath = path.join(distPath, 'index.html');
