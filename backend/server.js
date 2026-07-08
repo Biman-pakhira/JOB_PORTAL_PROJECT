@@ -25,7 +25,6 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-// Inside your cors() config, replace the origin check with a function:
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true); // allow server-to-server / curl
@@ -39,3 +38,31 @@ app.use(cors({
   },
   credentials: true,
 }));
+app.use(express.json());
+
+// Register API routes BEFORE static file serving
+const platformRoutes = require('./routes/authAndJobs');
+app.use('/api', platformRoutes);
+
+const distPath = fs.existsSync(path.join(__dirname, '../frontend/dist'))
+  ? path.join(__dirname, '../frontend/dist')
+  : path.join(__dirname, 'dist');
+
+app.use(express.static(distPath));
+
+app.use((req, res) => {
+  const indexHtmlPath = path.join(distPath, 'index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    res.sendFile(indexHtmlPath);
+  } else {
+    res.json({ status: 'success', message: 'Job Portal API is running successfully.' });
+  }
+});
+
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
