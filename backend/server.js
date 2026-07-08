@@ -22,45 +22,20 @@ const allowedOrigins = [
   'http://localhost:5173',
   'https://jobss.co.in',
   'https://jobs.co.in',
-  process.env.FRONTEND_URL, // optional override from env
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
+// Inside your cors() config, replace the origin check with a function:
 app.use(cors({
-  origin: (origin, callback) => {
-    // allow requests with no origin (curl, mobile apps, same-origin)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS: origin '${origin}' not allowed`));
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow server-to-server / curl
+    if (
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/job-portal-project-sgkt[a-z0-9-]*\.vercel\.app$/.test(origin)
+    ) {
+      return callback(null, true);
     }
+    callback(new Error('CORS: origin ' + origin + ' not allowed'));
   },
   credentials: true,
 }));
-app.use(express.json());
-
-// Register API routes BEFORE static file serving
-const platformRoutes = require('./routes/authAndJobs');
-app.use('/api', platformRoutes);
-
-const distPath = fs.existsSync(path.join(__dirname, '../frontend/dist'))
-  ? path.join(__dirname, '../frontend/dist')
-  : path.join(__dirname, 'dist');
-
-app.use(express.static(distPath));
-
-app.use((req, res) => {
-  const indexHtmlPath = path.join(distPath, 'index.html');
-  if (fs.existsSync(indexHtmlPath)) {
-    res.sendFile(indexHtmlPath);
-  } else {
-    res.json({ status: 'success', message: 'Job Portal API is running successfully.' });
-  }
-});
-
-if (!process.env.VERCEL) {
-  app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
-  });
-}
-
-module.exports = app;
