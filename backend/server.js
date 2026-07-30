@@ -46,7 +46,9 @@ app.use('/api', platformRoutes);
 
 const distPath = fs.existsSync(path.join(__dirname, '../frontend/dist'))
   ? path.join(__dirname, '../frontend/dist')
-  : path.join(__dirname, 'dist');
+  : fs.existsSync(path.join(__dirname, '../index.html'))
+    ? path.join(__dirname, '../')
+    : path.join(__dirname, 'dist');
 
 app.use(express.static(distPath));
 
