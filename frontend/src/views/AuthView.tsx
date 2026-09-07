@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { getApiUrl } from "../utils/api";
 import { Toast } from "../components/SharedAdminComponents";
 import { GoogleLogin } from "@react-oauth/google";
@@ -123,9 +124,16 @@ export function AuthView({ onAuthSuccess, onBack }: any) {
           <span style={{ color: "var(--on-surface-variant)" }}>
             {isLogin ? "Don't have an account? " : "Already have an account? "}
           </span>
-          <button onClick={() => setIsLogin(!isLogin)} style={{ fontWeight: 700, color: "var(--primary)", borderBottom: "1px solid var(--primary)" }}>
+          <button type="button" onClick={() => setIsLogin(!isLogin)} style={{ fontWeight: 700, color: "var(--primary)", borderBottom: "1px solid var(--primary)" }}>
             {isLogin ? "Sign Up" : "Sign In"}
           </button>
+        </div>
+
+        <div style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.875rem" }}>
+          <span style={{ color: "var(--on-surface-variant)" }}>Are you an admin? </span>
+          <Link to="/admin" style={{ fontWeight: 700, color: "var(--primary)", borderBottom: "1px solid var(--primary)", textDecoration: "none" }}>
+            Login as Admin
+          </Link>
         </div>
 
         <button onClick={onBack} style={{ display: "block", margin: "1.5rem auto 0", fontSize: "0.8125rem", fontWeight: 600, color: "var(--on-surface-variant)" }}>

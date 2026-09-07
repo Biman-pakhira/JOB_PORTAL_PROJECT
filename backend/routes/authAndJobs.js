@@ -129,10 +129,12 @@ const verifyAdmin = (req, res, next) => {
     const token = authHeader.split(' ')[1];
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if (!decoded.adminId) {
+        // Allow access if they have an adminId (legacy admin) or if their role is admin
+        if (!decoded.adminId && decoded.role !== 'admin') {
             return res.status(403).json({ error: 'Forbidden: Admin access required' });
         }
-        req.adminId = decoded.adminId;
+        // Fallback to assign adminId to req.adminId, or userId if it's an RBAC admin
+        req.adminId = decoded.adminId || decoded.userId;
         next();
     } catch (err) {
         res.status(401).json({ error: 'Invalid token' });
