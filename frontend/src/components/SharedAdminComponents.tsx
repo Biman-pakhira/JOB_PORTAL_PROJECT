@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import React, { useState, useRef } from "react";
 import { JOB_COLUMNS, UPDATE_COLUMNS } from "../constants/tokens";
 
@@ -22,7 +20,7 @@ export function Toast({ msg, type }: any) {
 export function DropZone({ onFile, accept, label }: any) {
   const [dragging, setDragging] = useState(false);
   const [fileName, setFileName] = useState("");
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (f: File) => {
     if (f) {
@@ -33,7 +31,7 @@ export function DropZone({ onFile, accept, label }: any) {
 
   return (
     <div
-      onClick={() => inputRef.current.click()}
+      onClick={() => inputRef.current?.click()}
       onDragOver={e => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={e => { e.preventDefault(); setDragging(false); const f = (e as any).dataTransfer.files[0]; handleFile(f); }}
@@ -92,7 +90,7 @@ export function DataTable({ rows, columns, onDelete, onEdit }: any) {
 }
 
 export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
-  const [form, setForm] = useState(initialData || { title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "", qualifications: "", experience: "" });
+  const [form, setForm] = useState(initialData || { title: "", company: "", location: "", type: "Full-time", category: "Private", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "", qualifications: "", experience: "" });
   const [err, setErr] = useState("");
   
   // Update form if initialData changes (for Edit mode)
@@ -107,18 +105,23 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
     // Clean payload for Prisma: remove read-only or invalid fields
     const { featured, createdAt, updatedAt, applications, ...cleanPayload } = form;
     
-    onAdd({ 
+    const payload: any = { 
       ...cleanPayload, 
-      id: form.id || Date.now(), 
       logo: form.logo || form.company.slice(0, 2).toUpperCase()
-    });
+    };
+    if (initialData && initialData.id) {
+      payload.id = initialData.id;
+    }
+
+    onAdd(payload);
 
     if (!initialData) {
-        setForm({ title: "", company: "", location: "", type: "Full-time", category: "Editorial", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "", qualifications: "", experience: "" });
+        setForm({ title: "", company: "", location: "", type: "Full-time", category: "Private", salary: "", deadline: "", postedAgo: "Just now", urgent: false, logo: "", logoColor: "#0050cb", description: "", url: "", qualifications: "", experience: "" });
     }
     setErr("");
   };
-  const field = (label, key, type = "text", opts = null) => (
+
+  const field = (label: string, key: string, type = "text", opts: string[] | null = null) => (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
       <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--on-surface-variant)", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</label>
       {opts ? (
@@ -135,16 +138,17 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
       )}
     </div>
   );
+
   return (
     <div style={{ background: "var(--surface-container-low)", borderRadius: "var(--r-xl)", padding: "1.5rem" }}>
-      <h3 style={{ fontSize: "1rem", fontWeight: 800, marginBottom: "1.25rem" }}>Add Job Manually</h3>
+      <h3 style={{ fontSize: "1rem", fontWeight: 800, marginBottom: "1.25rem" }}>{initialData ? "Edit Job Listing" : "Add Job Manually"}</h3>
       {err && <Toast msg={err} type="error" />}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "0.875rem", marginBottom: "1rem" }}>
         {field("Job Title *", "title")}
         {field("Company *", "company")}
         {field("Location", "location")}
         {field("Type", "type", "text", ["Full-time", "Part-time", "Contract", "Freelance", "On-site", "Remote", "Hybrid"])}
-        {field("Category", "category", "text", ["Editorial", "UX Writing", "Ops", "Narrative", "Copywriting", "Strategy", "Govt"])}
+        {field("Category", "category", "text", ["Private", "Govt"])}
         {field("Salary", "salary")}
         {field("Deadline", "deadline")}
         {field("Apply URL", "url")}
@@ -162,10 +166,10 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
       </div>
       <div style={{ marginBottom: "1rem" }}>
         <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--on-surface-variant)", letterSpacing: "0.04em", textTransform: "uppercase", display: "block", marginBottom: "0.375rem" }}>Qualifications</label>
-        <textarea value={form.qualifications} onChange={set("qualifications")} rows={2} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none", marginBottom: "1rem" }} />
+        <textarea value={form.qualifications || ""} onChange={set("qualifications")} rows={2} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none", marginBottom: "1rem" }} />
         
         <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--on-surface-variant)", letterSpacing: "0.04em", textTransform: "uppercase", display: "block", marginBottom: "0.375rem" }}>Description</label>
-        <textarea value={form.description} onChange={set("description")} rows={3} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none" }} />
+        <textarea value={form.description || ""} onChange={set("description")} rows={3} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none" }} />
       </div>
       <div style={{ display: "flex", gap: "1rem" }}>
           <button onClick={submit} style={{
@@ -189,25 +193,40 @@ export function AddJobForm({ onAdd, initialData = null, onCancel }: any) {
   );
 }
 
-export function AddUpdateForm({ onAdd }: any) {
-  const [form, setForm] = useState({ title: "", date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), type: "Feature", body: "" });
+export function AddUpdateForm({ onAdd, initialData = null, onCancel }: any) {
+  const [form, setForm] = useState(initialData || { title: "", date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), type: "Feature", body: "" });
   const [err, setErr] = useState("");
+
+  React.useEffect(() => {
+    if (initialData) setForm(initialData);
+  }, [initialData]);
+
   const set = (k: any) => (e: any) => setForm((f: any) => ({ ...f, [k]: e.target.value }));
   const submit = () => {
     if (!form.title || !form.body) { setErr("Title and body are required."); return; }
-    onAdd({ ...form, id: Date.now() });
-    setForm({ title: "", date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), type: "Feature", body: "" });
+    
+    const { createdAt, updatedAt, ...cleanPayload } = form;
+    const payload: any = { ...cleanPayload };
+    if (initialData && initialData.id) {
+      payload.id = initialData.id;
+    }
+
+    onAdd(payload);
+    if (!initialData) {
+      setForm({ title: "", date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), type: "Feature", body: "" });
+    }
     setErr("");
   };
+
   return (
     <div style={{ background: "var(--surface-container-low)", borderRadius: "var(--r-xl)", padding: "1.5rem" }}>
-      <h3 style={{ fontSize: "1rem", fontWeight: 800, marginBottom: "1.25rem" }}>Add Update Manually</h3>
+      <h3 style={{ fontSize: "1rem", fontWeight: 800, marginBottom: "1.25rem" }}>{initialData ? "Edit Update" : "Add Update Manually"}</h3>
       {err && <Toast msg={err} type="error" />}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.875rem", marginBottom: "1rem" }}>
         {[["Title *", "title"], ["Date", "date"]].map(([l, k]) => (
           <div key={k} style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
             <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--on-surface-variant)", letterSpacing: "0.04em", textTransform: "uppercase" }}>{l}</label>
-            <input value={form[k]} onChange={set(k)} style={{ padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", outline: "none" }} />
+            <input value={form[k] || ""} onChange={set(k)} style={{ padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", outline: "none" }} />
           </div>
         ))}
         <div style={{ display: "flex", flexDirection: "column", gap: "0.375rem" }}>
@@ -219,14 +238,26 @@ export function AddUpdateForm({ onAdd }: any) {
       </div>
       <div style={{ marginBottom: "1rem" }}>
         <label style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--on-surface-variant)", letterSpacing: "0.04em", textTransform: "uppercase", display: "block", marginBottom: "0.375rem" }}>Body *</label>
-        <textarea value={form.body} onChange={set("body")} rows={3} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none" }} />
+        <textarea value={form.body || ""} onChange={set("body")} rows={3} style={{ width: "100%", padding: "0.5rem 0.75rem", borderRadius: "var(--r-md)", border: "1px solid var(--outline-variant)", background: "var(--surface-container-lowest)", fontFamily: "var(--font-body)", fontSize: "0.875rem", color: "var(--on-surface)", resize: "vertical", outline: "none" }} />
       </div>
-      <button onClick={submit} style={{
-        padding: "0.625rem 1.75rem", borderRadius: "var(--r-md)", fontSize: "0.875rem", fontWeight: 700,
-        color: "var(--on-secondary)", background: "var(--secondary)",
-        boxShadow: "0 2px 8px rgba(0,109,67,.2)", cursor: "pointer",
-        display: "inline-flex", alignItems: "center", gap: "0.5rem",
-      }}><i className="ms" style={{ fontSize: 18 }}>add_circle</i> Add Update</button>
+      <div style={{ display: "flex", gap: "1rem" }}>
+        <button onClick={submit} style={{
+          padding: "0.625rem 1.75rem", borderRadius: "var(--r-md)", fontSize: "0.875rem", fontWeight: 700,
+          color: "var(--on-secondary)", background: "var(--secondary)",
+          boxShadow: "0 2px 8px rgba(0,109,67,.2)", cursor: "pointer",
+          display: "inline-flex", alignItems: "center", gap: "0.5rem",
+        }}>
+          <i className="ms" style={{ fontSize: 18 }}>{initialData ? "save" : "add_circle"}</i> 
+          {initialData ? "Save Changes" : "Add Update"}
+        </button>
+        {initialData && (
+          <button onClick={onCancel} style={{
+              padding: "0.625rem 1.75rem", borderRadius: "var(--r-md)", fontSize: "0.875rem", fontWeight: 700,
+              color: "var(--on-surface-variant)", background: "var(--surface-container-high)",
+              cursor: "pointer"
+          }}>Cancel</button>
+        )}
+      </div>
     </div>
   );
 }

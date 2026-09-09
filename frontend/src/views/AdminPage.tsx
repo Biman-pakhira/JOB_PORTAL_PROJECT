@@ -202,6 +202,55 @@ export function AdminPage() {
 
 
 
+  const handleManualUpdateSave = async (updateData: any) => {
+    const isEdit = !!updateData.id && typeof updateData.id === "string" && updateData.id.length > 10;
+    const url = isEdit ? `${apiUrl}/admin/updates/${updateData.id}` : `${apiUrl}/admin/updates`;
+    const method = isEdit ? 'PATCH' : 'POST';
+
+    try {
+      const payload = isEdit ? updateData : { ...updateData };
+      if (!isEdit) delete payload.id;
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(isEdit ? "Update modified!" : "Update added!");
+        setEditingUpdate(null);
+        setShowManualUpdateForm(false);
+        await fetchData();
+      } else {
+        showToast(data.error || "Save failed", "error");
+      }
+    } catch (err) {
+      showToast("Operation failed", "error");
+    }
+  };
+
+  const handleDeleteUpdate = async (id: string) => {
+    if (!confirm("Are you sure you want to remove this update?")) return;
+    try {
+      const res = await fetch(`${apiUrl}/admin/updates/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showToast("✓ Update removed successfully");
+        await fetchData();
+      } else {
+        showToast("Delete failed", "error");
+      }
+    } catch (err) {
+      showToast("Delete failed", "error");
+    }
+  };
+
   const handleUpdateFile = async (file: any) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -307,13 +356,41 @@ export function AdminPage() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
             <div style={{ background: "var(--surface-container-low)", borderRadius: "var(--r-xl)", padding: "1.5rem" }}>
-                 <h3 style={{ fontSize: "1rem", fontWeight: 800, marginBottom: "1rem" }}>Bulk Update Upload</h3>
+                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                     <h3 style={{ fontSize: "1rem", fontWeight: 800 }}>Bulk Update Upload</h3>
+                     <button onClick={() => downloadTemplate("updates")} style={{ fontSize: "0.75rem", color: "var(--primary)", fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}>Template ↗</button>
+                 </div>
                  <DropZone onFile={handleUpdateFile} accept=".xlsx,.csv" label="Click to upload updates" />
             </div>
-            <DataTable rows={updates} columns={["title", "type", "date"]} onDelete={async (id: any) => {
-                showToast("This feature is currently read-only for individual items. Use Excel for changes.", "warning");
-                // Implementing update CRUD is a separate scope if needed
-            }} />
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h3 style={{ fontSize: "1rem", fontWeight: 800 }}>Manual Update Management</h3>
+                    <button 
+                        onClick={() => { setShowManualUpdateForm(!showManualUpdateForm); setEditingUpdate(null); }}
+                        style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        <i className="ms">{showManualUpdateForm && !editingUpdate ? "remove_circle" : "add_circle"}</i>
+                        {showManualUpdateForm && !editingUpdate ? "Close Form" : "Create Platform Update"}
+                    </button>
+                </div>
+                {(showManualUpdateForm || editingUpdate) && (
+                    <AddUpdateForm 
+                        onAdd={handleManualUpdateSave} 
+                        initialData={editingUpdate} 
+                        onCancel={() => { setEditingUpdate(null); setShowManualUpdateForm(false); }} 
+                    />
+                )}
+            </div>
+
+            <div>
+                 <h3 style={{ fontSize: "1rem", fontWeight: 800, marginBottom: "1.25rem" }}>Active Platform Updates ({updates.length})</h3>
+                 <DataTable 
+                    rows={updates} 
+                    columns={["title", "type", "date"]} 
+                    onEdit={(upd: any) => { setEditingUpdate(upd); window.scrollTo({ top: 120, behavior: "smooth" }); }}
+                    onDelete={handleDeleteUpdate} 
+                 />
+            </div>
           </div>
         )}
       </div>

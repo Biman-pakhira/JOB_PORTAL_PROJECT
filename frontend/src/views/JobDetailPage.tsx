@@ -1,9 +1,61 @@
-// @ts-nocheck
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getApiUrl } from "../utils/api";
+import { Toast } from "../components/SharedAdminComponents";
 
 export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
+  const navigate = useNavigate();
+  const [applying, setApplying] = useState(false);
+  const [applied, setApplied] = useState(false);
+  const [toast, setToast] = useState({ msg: "", type: "success" });
+
   if (!job) return <div style={{ paddingTop: 120, textAlign: "center" }}>Job not found</div>;
+
+  const handleApply = async () => {
+    const token = localStorage.getItem("userToken");
+    if (!token) {
+      if (job.url) {
+        window.open(job.url, '_blank');
+        return;
+      }
+      navigate("/auth");
+      return;
+    }
+
+    setApplying(true);
+    try {
+      const apiUrl = getApiUrl();
+      const res = await fetch(`${apiUrl}/applications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ jobId: job.id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setApplied(true);
+        setToast({ msg: "Application submitted successfully!", type: "success" });
+        if (job.url) {
+          setTimeout(() => window.open(job.url, '_blank'), 1000);
+        }
+      } else {
+        if (data.error?.includes("Already applied")) {
+          setApplied(true);
+          setToast({ msg: "You have already applied to this job.", type: "warning" });
+          if (job.url) window.open(job.url, '_blank');
+        } else {
+          setToast({ msg: data.error || "Application failed", type: "error" });
+        }
+      }
+    } catch (err) {
+      setToast({ msg: "Network error occurred", type: "error" });
+    } finally {
+      setApplying(false);
+      setTimeout(() => setToast({ msg: "", type: "success" }), 4000);
+    }
+  };
 
   return (
     <main style={{ background: "var(--surface)", minHeight: "100vh", paddingBottom: "5rem" }}>
@@ -140,17 +192,19 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
         {/* Sidebar */}
         <aside style={{ position: "sticky", top: 100, height: "fit-content" }}>
           <div style={{ background: "var(--surface-container-lowest)", borderRadius: "var(--r-xl)", padding: "2rem", boxShadow: "0 24px 48px var(--shadow)", border: "1px solid var(--outline-variant)" }}>
+            {toast.msg && <Toast msg={toast.msg} type={toast.type} />}
             <button 
-              onClick={() => job.url && window.open(job.url, '_blank')}
+              onClick={handleApply}
+              disabled={applying}
               style={{
-                width: "100%", padding: "1.25rem", background: "var(--primary)", color: "white",
+                width: "100%", padding: "1.25rem", background: applied ? "var(--secondary)" : "var(--primary)", color: "white",
                 borderRadius: "var(--r-md)", fontSize: "1.125rem", fontWeight: 800, marginBottom: "1rem",
-                boxShadow: "0 8px 24px rgba(0,80,203,0.25)", transition: "transform .2s"
+                boxShadow: "0 8px 24px rgba(0,80,203,0.25)", transition: "transform .2s", opacity: applying ? 0.7 : 1
               }}
               onMouseDown={e => e.currentTarget.style.transform = "scale(0.98)"}
               onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
             >
-              Apply Now
+              {applying ? "Submitting..." : applied ? "✓ Application Sent" : "Apply Now"}
             </button>
             <p style={{ textAlign: "center", fontSize: "0.8125rem", color: "var(--on-surface-variant)", fontWeight: 500, marginBottom: "2rem" }}>
                 Referral bonus of $500 eligible for this role.

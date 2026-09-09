@@ -1,10 +1,8 @@
-// @ts-nocheck
-
 import React from "react";
 
 export function UpdateCard({ update, delay = 0 }: any) {
-  const colors = { Feature: "var(--primary)", Report: "var(--secondary)", Partnership: "var(--tertiary)" };
-  const bgs = { Feature: "rgba(0,80,203,.08)", Report: "rgba(0,109,67,.08)", Partnership: "rgba(159,54,0,.08)" };
+  const colors: Record<string, string> = { Feature: "var(--primary)", Report: "var(--secondary)", Partnership: "var(--tertiary)" };
+  const bgs: Record<string, string> = { Feature: "rgba(0,80,203,.08)", Report: "rgba(0,109,67,.08)", Partnership: "rgba(159,54,0,.08)" };
   return (
     <div className="fade-up" style={{
       background: "var(--surface-container-lowest)", borderRadius: "var(--r-xl)",

@@ -34,7 +34,7 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
         <Link to="/" style={{
           display: "flex", alignItems: "center", textDecoration: "none"
         }}>
-          <img src="/logo.png" alt="Jobs Today" style={{ height: 180, width: "auto" }} />
+          <img src="/logo.png" alt="Jobs Today" style={{ height: 38, width: "auto", objectFit: "contain" }} />
         </Link>
       </div>
 

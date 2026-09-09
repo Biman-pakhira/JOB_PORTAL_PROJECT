@@ -13,14 +13,15 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // Helper to handle Prisma errors with descriptive messages
 const handlePrismaError = (error, res) => {
     console.error('Prisma Error:', error);
-    if (error.code === 'P2024' || error.message.includes('Server selection timed out')) {
+    const msg = error?.message || '';
+    if (error?.code === 'P2024' || msg.includes('Server selection timed out') || msg.includes('connection') || msg.includes('DNS resolution')) {
         return res.status(503).json({ 
-            error: 'Database connection timeout. Please ensure your IP is whitelisted in MongoDB Atlas.',
-            code: 'DB_CONNECTION_TIMEOUT'
+            error: 'Database connection error. Please ensure your IP is whitelisted in MongoDB Atlas or check your DATABASE_URL in .env.',
+            code: 'DB_CONNECTION_ERROR'
         });
     }
-    if (error.code === 'P2002') {
-        const target = error.meta?.target || 'field';
+    if (error?.code === 'P2002') {
+        const target = error?.meta?.target || 'field';
         return res.status(400).json({ error: `Unique constraint failed on ${target}` });
     }
     res.status(500).json({ error: 'Internal server error' });
@@ -261,8 +262,7 @@ router.get('/jobs', async (req, res) => {
         });
         res.json(jobs);
     } catch (error) {
-        console.error('Jobs fetch error:', error);
-        res.status(500).json({ error: 'Error fetching jobs' });
+        handlePrismaError(error, res);
     }
 });
 
@@ -275,7 +275,7 @@ router.get('/jobs/:id', async (req, res) => {
         if (!job) return res.status(404).json({ error: 'Job not found' });
         res.json(job);
     } catch (error) {
-        res.status(500).json({ error: 'Error fetching job details' });
+        handlePrismaError(error, res);
     }
 });
 
@@ -287,7 +287,7 @@ router.get('/updates', async (req, res) => {
         });
         res.json(updates);
     } catch (error) {
-        res.status(500).json({ error: 'Error fetching updates' });
+        handlePrismaError(error, res);
     }
 });
 
@@ -332,6 +332,9 @@ router.post('/admin/jobs', verifyAdmin, async (req, res) => {
 router.patch('/admin/jobs/:id', verifyAdmin, async (req, res) => {
     try {
         const { id, createdAt, updatedAt, applications, ...updateData } = req.body;
+        if (typeof updateData.urgent !== 'undefined') {
+            updateData.urgent = updateData.urgent === true || updateData.urgent === 'true';
+        }
         
         const updated = await prisma.job.update({
             where: { id: req.params.id },
@@ -367,6 +370,46 @@ router.post('/admin/updates/upload', verifyAdmin, upload.single('file'), async (
     } catch (error) {
         console.error('Excel upload error:', error);
         res.status(500).json({ error: 'Error processing excel file', details: error.message });
+    }
+});
+
+// Admin Route: Manual Update Create
+router.post('/admin/updates', verifyAdmin, async (req, res) => {
+    try {
+        const { title, date, type, body } = req.body;
+        if (!title || !body) return res.status(400).json({ error: 'Title and body are required' });
+        const update = await prisma.update.create({
+            data: { title, date: date || new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), type: type || 'Feature', body }
+        });
+        res.json({ message: 'Update created successfully', update });
+    } catch (error) {
+        handlePrismaError(error, res);
+    }
+});
+
+// Admin Route: Individual Update Edit
+router.patch('/admin/updates/:id', verifyAdmin, async (req, res) => {
+    try {
+        const { id, createdAt, updatedAt, ...updateData } = req.body;
+        const updated = await prisma.update.update({
+            where: { id: req.params.id },
+            data: updateData
+        });
+        res.json({ message: 'Update modified successfully', update: updated });
+    } catch (error) {
+        handlePrismaError(error, res);
+    }
+});
+
+// Admin Route: Individual Update Delete
+router.delete('/admin/updates/:id', verifyAdmin, async (req, res) => {
+    try {
+        await prisma.update.delete({
+            where: { id: req.params.id }
+        });
+        res.json({ message: 'Update deleted successfully' });
+    } catch (error) {
+        handlePrismaError(error, res);
     }
 });
 

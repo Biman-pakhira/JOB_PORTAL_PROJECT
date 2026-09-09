@@ -27,14 +27,15 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow server-to-server / curl
+    if (!origin) return callback(null, true); // allow server-to-server / curl / Postman
     if (
+      process.env.NODE_ENV !== 'production' ||
       allowedOrigins.includes(origin) ||
-      /^https:\/\/job-portal-project-sgkt[a-z0-9-]*\.vercel\.app$/.test(origin)
+      /\.vercel\.app$/.test(origin)
     ) {
       return callback(null, true);
     }
-    callback(new Error('CORS: origin ' + origin + ' not allowed'));
+    return callback(null, true);
   },
   credentials: true,
 }));

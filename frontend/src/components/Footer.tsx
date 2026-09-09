@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 
 export function Footer() {
@@ -11,7 +10,10 @@ export function Footer() {
             Empowering professionals through Biman Pakhira's vision of an accessible and inclusive creative economy.
           </p>
         </div>
-        {[["Platform", ["About Us", "Contact Support", "Newsletter"]], ["Legal", ["Privacy Policy", "Terms of Service"]]].map(([title, links]) => (
+        {([
+          ["Platform", ["About Us", "Contact Support", "Newsletter"]],
+          ["Legal", ["Privacy Policy", "Terms of Service"]]
+        ] as Array<[string, string[]]>).map(([title, links]) => (
           <div key={title}>
             <h4 className="footer-heading" style={{ fontSize: "0.875rem", fontWeight: 700, marginBottom: "1rem" }}>{title}</h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.5rem" }}>

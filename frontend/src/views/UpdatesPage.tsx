@@ -24,10 +24,10 @@ export function UpdatesPage({ updates }: any) {
         </p>
       </header>
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 3rem" }}>
-        {updates.length === 0 ? (
+        {safeUpdates.length === 0 ? (
           <div style={{ textAlign: "center", padding: "4rem", color: "var(--on-surface-variant)" }}>No updates yet. Check back soon.</div>
         ) : (
-          updates.map((u, i) => <UpdateCard key={u.id} update={u} delay={i * 0.08} />)
+          safeUpdates.map((u: any, i: number) => <UpdateCard key={u.id} update={u} delay={i * 0.08} />)
         )}
       </div>
     </main>
