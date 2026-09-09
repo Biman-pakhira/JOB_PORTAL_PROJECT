@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate, useParams, useLocation } from "react-router-dom";
 import { DataProvider, useData, type Job, type User } from "./context/DataContext";
 import { GoogleAuthProvider } from "./components/GoogleAuthProvider";
 import { NavWrapper } from "./components/NavWrapper";
@@ -7,6 +7,14 @@ import { Footer } from "./components/Footer";
 import { BottomNav } from "./components/BottomNav";
 import { TOKENS } from "./constants/tokens";
 import { SkeletonList } from "./components/SkeletonCard";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 // Views
 import { HomeView } from "./views/HomeView";
@@ -215,6 +223,7 @@ export function AppContent() {
   return (
     <>
       <style>{TOKENS}</style>
+      <ScrollToTop />
       <NavWrapper />
       <div style={{ minHeight: "calc(100vh - 64px)" }}>
         <Routes>

@@ -26,7 +26,10 @@ export function SectorPage({ title, subtitle, jobs, bookmarks, onBookmark, categ
 
   // Then filter by chip
   filtered = activeChip === "All" ? filtered
-    : filtered.filter(j => j.type === activeChip || j.location?.toLowerCase().includes(activeChip.toLowerCase()));
+    : filtered.filter((j: any) => 
+        j.type?.toLowerCase() === activeChip.toLowerCase() || 
+        j.location?.toLowerCase().includes(activeChip.toLowerCase())
+      );
 
   const deadlineSoon = [...filtered]
     .sort((a, b) => {
@@ -35,8 +38,6 @@ export function SectorPage({ title, subtitle, jobs, bookmarks, onBookmark, categ
       return dateA - dateB;
     })
     .slice(0, 3);
-
-  const urgencyColor = { critical: "var(--error)", warning: "var(--tertiary)", safe: "var(--secondary)" };
 
   return (
     <main style={{ paddingTop: 88, paddingBottom: "5rem" }}>
@@ -122,9 +123,21 @@ export function SectorPage({ title, subtitle, jobs, bookmarks, onBookmark, categ
           </div>
 
           {filtered.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "var(--on-surface-variant)" }}>No jobs match this filter.</div>
+            <div style={{ textAlign: "center", padding: "3rem 2rem", background: "#ffffff", borderRadius: "var(--r-xl)", color: "var(--on-surface-variant)" }}>
+              <i className="ms" style={{ fontSize: 44, color: "var(--primary)", marginBottom: "1rem" }}>
+                {title.includes("Saved") ? "bookmark_border" : "search_off"}
+              </i>
+              <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "var(--on-surface)", marginBottom: "0.5rem" }}>
+                {title.includes("Saved") ? "No saved jobs yet" : "No jobs match your filter"}
+              </h3>
+              <p style={{ fontSize: "0.875rem", color: "var(--on-surface-variant)", maxWidth: 400, margin: "0 auto 1.5rem", lineHeight: 1.6 }}>
+                {title.includes("Saved") 
+                  ? "Click the bookmark icon on any job card to save roles you want to review or apply to later."
+                  : "Try clearing your search query or switching category filters to explore more opportunities."}
+              </p>
+            </div>
           ) : (
-            filtered.map((job, i) => (
+            filtered.map((job: any, i: number) => (
               <JobCard key={job.id} job={job} bookmarked={bookmarks.has(job.id)} onBookmark={onBookmark} delay={i * 0.08} />
             ))
           )}

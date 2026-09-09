@@ -73,15 +73,33 @@ export function HomeView() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {filtered.slice(0, 10).map((job: any, i: number) => (
-            <JobCard 
-                key={job.id} 
-                job={job} 
-                bookmarked={bookmarks.has(job.id)} 
-                onBookmark={toggleBookmark} 
-                delay={i * 0.05} 
-            />
-          ))}
+          {filtered.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "3rem 2rem", background: "#ffffff", borderRadius: "var(--r-xl)", color: "var(--on-surface-variant)", border: "1px solid var(--outline-variant)" }}>
+              <i className="ms" style={{ fontSize: 44, color: "var(--primary)", marginBottom: "1rem" }}>search_off</i>
+              <h3 style={{ fontSize: "1.125rem", fontWeight: 800, color: "var(--on-surface)", marginBottom: "0.5rem" }}>
+                No jobs match your search
+              </h3>
+              <p style={{ fontSize: "0.875rem", color: "var(--on-surface-variant)", maxWidth: 400, margin: "0 auto 1.5rem", lineHeight: 1.6 }}>
+                Try searching for different keywords or reset your filters.
+              </p>
+              <button 
+                onClick={() => { setSearchQuery(""); setActiveTab("All Jobs"); }}
+                style={{ padding: "0.625rem 1.25rem", borderRadius: "var(--r-md)", background: "var(--primary)", color: "white", fontWeight: 700, border: "none", cursor: "pointer" }}
+              >
+                Clear Search & Filters
+              </button>
+            </div>
+          ) : (
+            filtered.slice(0, 10).map((job: any, i: number) => (
+              <JobCard 
+                  key={job.id} 
+                  job={job} 
+                  bookmarked={bookmarks.has(job.id)} 
+                  onBookmark={toggleBookmark} 
+                  delay={i * 0.05} 
+              />
+            ))
+          )}
         </div>
         
         {/* Banner Section */}

@@ -12,6 +12,11 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
 
   const currentRoute = activePage === "browse-jobs" ? "/" : "/" + activePage;
 
+  const isLinkActive = (href: string) => {
+    if (href === "/") return currentRoute === "/" || currentRoute === "/browse";
+    return currentRoute === href;
+  };
+
   return (
     <>
     <nav style={{
@@ -40,16 +45,22 @@ export function Nav({ activePage, user, onLogout, isAdmin }: any) {
 
       {/* Desktop Links (Hidden on Mobile) */}
       <div className="mobile-hide" style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
-        {links.map(l => (
-          <Link key={l.href} to={l.href}
-            style={{
-              fontSize: "0.875rem", fontWeight: currentRoute === l.href ? 700 : 500,
-              color: currentRoute === l.href ? "var(--primary)" : "var(--on-surface-variant)",
-              textDecoration: "none"
-            }}>
-            {l.label}
-          </Link>
-        ))}
+        {links.map(l => {
+          const active = isLinkActive(l.href);
+          return (
+            <Link key={l.href} to={l.href}
+              style={{
+                fontSize: "0.875rem", fontWeight: active ? 800 : 500,
+                color: active ? "var(--primary)" : "var(--on-surface-variant)",
+                borderBottom: active ? "2px solid var(--primary)" : "2px solid transparent",
+                paddingBottom: "0.25rem",
+                textDecoration: "none",
+                transition: "all 0.15s"
+              }}>
+              {l.label}
+            </Link>
+          );
+        })}
       </div>
 
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>

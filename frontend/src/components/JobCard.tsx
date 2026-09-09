@@ -58,18 +58,41 @@ export function JobCard({ job, bookmarked, onBookmark, delay = 0 }: any) {
                 <i className="ms" style={{ fontSize: 15 }}>event</i> {job.deadline || "Open"}
               </span>
             </div>
-            <button 
-              onClick={(e) => { 
-                e.preventDefault(); 
-                e.stopPropagation(); 
-                triggerApply(job); 
-              }}
-              style={{
-              padding: "0.5rem 1.375rem", borderRadius: "var(--r-md)", fontSize: "0.8125rem", fontWeight: 700,
-              color: "var(--on-secondary)", background: "var(--secondary)",
-              boxShadow: "0 2px 8px rgba(0,109,67,.20)", transition: "background .18s,transform .15s",
-              whiteSpace: "nowrap", flexShrink: 0,
-            }}>Apply Now</button>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              {onBookmark && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onBookmark(job.id);
+                  }}
+                  style={{
+                    width: 36, height: 36, borderRadius: "50%",
+                    background: bookmarked ? "var(--primary)" : "var(--surface-container-high)",
+                    color: bookmarked ? "white" : "var(--on-surface-variant)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all .2s", border: "none", cursor: "pointer"
+                  }}
+                  title={bookmarked ? "Saved" : "Save Job"}
+                >
+                  <i className={`ms ${bookmarked ? "ms-fill" : ""}`} style={{ fontSize: 18 }}>
+                    {bookmarked ? "bookmark" : "bookmark_border"}
+                  </i>
+                </button>
+              )}
+              <button 
+                onClick={(e) => { 
+                  e.preventDefault(); 
+                  e.stopPropagation(); 
+                  triggerApply(job); 
+                }}
+                style={{
+                padding: "0.5rem 1.375rem", borderRadius: "var(--r-md)", fontSize: "0.8125rem", fontWeight: 700,
+                color: "var(--on-secondary)", background: "var(--secondary)",
+                boxShadow: "0 2px 8px rgba(0,109,67,.20)", transition: "background .18s,transform .15s",
+                whiteSpace: "nowrap", flexShrink: 0,
+              }}>Apply Now</button>
+            </div>
           </div>
         </div>
       </article>
