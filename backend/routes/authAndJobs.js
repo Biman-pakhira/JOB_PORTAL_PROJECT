@@ -442,18 +442,33 @@ router.put('/profile', verifyUser, async (req, res) => {
             name, headline, location, phone, topSkills, 
             preferredSalary, workSetting, desiredRole, industryFocus, openToWork 
         } = req.body;
-        
+
+        const dataToUpdate = {};
+        if (typeof name !== 'undefined') dataToUpdate.name = name;
+        if (typeof headline !== 'undefined') dataToUpdate.headline = headline;
+        if (typeof location !== 'undefined') dataToUpdate.location = location;
+        if (typeof phone !== 'undefined') dataToUpdate.phone = phone;
+        if (typeof topSkills !== 'undefined') dataToUpdate.topSkills = topSkills;
+        if (typeof preferredSalary !== 'undefined') dataToUpdate.preferredSalary = preferredSalary;
+        if (typeof workSetting !== 'undefined') dataToUpdate.workSetting = workSetting;
+        if (typeof desiredRole !== 'undefined') dataToUpdate.desiredRole = desiredRole;
+        if (typeof industryFocus !== 'undefined') dataToUpdate.industryFocus = industryFocus;
+        if (typeof openToWork !== 'undefined') dataToUpdate.openToWork = openToWork === true || openToWork === 'true';
+
         const updated = await prisma.user.update({
             where: { id: req.userId },
-            data: { 
-                name, headline, location, phone, topSkills, 
-                preferredSalary, workSetting, desiredRole, industryFocus,
-                openToWork: openToWork === true || openToWork === 'true'
+            data: dataToUpdate,
+            select: { 
+                id: true, name: true, email: true, role: true, 
+                resumeUrl: true, resumeName: true,
+                profileImage: true, headline: true, location: true, phone: true,
+                topSkills: true, preferredSalary: true, workSetting: true,
+                desiredRole: true, industryFocus: true, openToWork: true
             }
         });
         res.json({ message: 'Profile updated successfully', user: updated });
     } catch (error) {
-        res.status(500).json({ error: 'Error updating profile' });
+        handlePrismaError(error, res);
     }
 });
 
