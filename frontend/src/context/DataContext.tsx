@@ -1,6 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { getApiUrl } from "../utils/api";
+import { AuthRequiredModal } from "../components/AuthRequiredModal";
 
 // ── Domain types ─────────────────────────────────────────────────────────────
 
@@ -56,6 +56,12 @@ export interface User {
   resumeName?: string;
 }
 
+export interface ApplyResult {
+  success: boolean;
+  message: string;
+  alreadyApplied?: boolean;
+}
+
 export interface DataContextValue {
   jobs: Job[];
   setJobs: React.Dispatch<React.SetStateAction<Job[]>>;
@@ -70,6 +76,9 @@ export interface DataContextValue {
   logout: () => void;
   loading: boolean;
   fetchData: () => Promise<void>;
+  pendingApplyJob: Job | null;
+  triggerApply: (job: Job) => Promise<ApplyResult | undefined>;
+  closeAuthModal: () => void;
 }
 
 // ── Context ──────────────────────────────────────────────────────────────────
@@ -83,6 +92,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [pendingApplyJob, setPendingApplyJob] = useState<Job | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -174,6 +184,45 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     setIsAdmin(false);
   };
 
+  const closeAuthModal = () => {
+    setPendingApplyJob(null);
+  };
+
+  const triggerApply = async (job: Job): Promise<ApplyResult | undefined> => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("userToken") : null;
+    if (!token || !user) {
+      setPendingApplyJob(job);
+      return { success: false, message: "Authentication required" };
+    }
+
+    try {
+      const apiUrl = getApiUrl();
+      const res = await fetch(`${apiUrl}/applications`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ jobId: job.id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (job.url) {
+          window.open(job.url, '_blank');
+        }
+        return { success: true, message: "Application submitted successfully!" };
+      } else {
+        if (data.error?.includes("Already applied")) {
+          if (job.url) window.open(job.url, '_blank');
+          return { success: true, message: "You have already applied to this job.", alreadyApplied: true };
+        }
+        return { success: false, message: data.error || "Application failed" };
+      }
+    } catch (err) {
+      return { success: false, message: "Network error during application" };
+    }
+  };
+
   return (
     <DataContext.Provider value={{ 
       jobs, setJobs, 
@@ -181,9 +230,11 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       bookmarks, toggleBookmark, 
       user, setUser,
       isAdmin, setIsAdmin,
-      logout, loading, fetchData 
+      logout, loading, fetchData,
+      pendingApplyJob, triggerApply, closeAuthModal
     }}>
       {children}
+      <AuthRequiredModal job={pendingApplyJob} onClose={closeAuthModal} />
     </DataContext.Provider>
   );
 }

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useData } from "../context/DataContext";
 
 export function JobCard({ job, bookmarked, onBookmark, delay = 0 }: any) {
   const [hovered, setHovered] = useState(false);
+  const { triggerApply } = useData();
   return (
     <Link to={`/jobs/${job.id}`} style={{ textDecoration: "none", color: "inherit" }}>
       <article
@@ -57,7 +59,11 @@ export function JobCard({ job, bookmarked, onBookmark, delay = 0 }: any) {
               </span>
             </div>
             <button 
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); job.url && window.open(job.url, '_blank') }}
+              onClick={(e) => { 
+                e.preventDefault(); 
+                e.stopPropagation(); 
+                triggerApply(job); 
+              }}
               style={{
               padding: "0.5rem 1.375rem", borderRadius: "var(--r-md)", fontSize: "0.8125rem", fontWeight: 700,
               color: "var(--on-secondary)", background: "var(--secondary)",

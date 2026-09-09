@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getApiUrl } from "../utils/api";
+import { useData } from "../context/DataContext";
 import { Toast } from "../components/SharedAdminComponents";
 
 export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
   const navigate = useNavigate();
+  const { triggerApply } = useData();
   const [applying, setApplying] = useState(false);
   const [applied, setApplied] = useState(false);
   const [toast, setToast] = useState({ msg: "", type: "success" });
@@ -12,47 +13,16 @@ export function JobDetailPage({ job, bookmarked, onBookmark }: any) {
   if (!job) return <div style={{ paddingTop: 120, textAlign: "center" }}>Job not found</div>;
 
   const handleApply = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) {
-      if (job.url) {
-        window.open(job.url, '_blank');
-        return;
-      }
-      navigate("/auth");
-      return;
-    }
-
     setApplying(true);
-    try {
-      const apiUrl = getApiUrl();
-      const res = await fetch(`${apiUrl}/applications`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ jobId: job.id })
-      });
-      const data = await res.json();
-      if (res.ok) {
+    const res = await triggerApply(job);
+    setApplying(false);
+    if (res) {
+      if (res.success) {
         setApplied(true);
-        setToast({ msg: "Application submitted successfully!", type: "success" });
-        if (job.url) {
-          setTimeout(() => window.open(job.url, '_blank'), 1000);
-        }
-      } else {
-        if (data.error?.includes("Already applied")) {
-          setApplied(true);
-          setToast({ msg: "You have already applied to this job.", type: "warning" });
-          if (job.url) window.open(job.url, '_blank');
-        } else {
-          setToast({ msg: data.error || "Application failed", type: "error" });
-        }
+        setToast({ msg: res.message, type: res.alreadyApplied ? "warning" : "success" });
+      } else if (res.message !== "Authentication required") {
+        setToast({ msg: res.message, type: "error" });
       }
-    } catch (err) {
-      setToast({ msg: "Network error occurred", type: "error" });
-    } finally {
-      setApplying(false);
       setTimeout(() => setToast({ msg: "", type: "success" }), 4000);
     }
   };
