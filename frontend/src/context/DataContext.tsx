@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { getApiUrl } from "../utils/api";
-import { AuthRequiredModal } from "../components/AuthRequiredModal";
+
 
 // ── Domain types ─────────────────────────────────────────────────────────────
 
@@ -234,7 +234,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       pendingApplyJob, triggerApply, closeAuthModal
     }}>
       {children}
-      <AuthRequiredModal job={pendingApplyJob} onClose={closeAuthModal} />
     </DataContext.Provider>
   );
 }

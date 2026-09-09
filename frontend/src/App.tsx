@@ -7,6 +7,7 @@ import { Footer } from "./components/Footer";
 import { BottomNav } from "./components/BottomNav";
 import { TOKENS } from "./constants/tokens";
 import { SkeletonList } from "./components/SkeletonCard";
+import { AuthRequiredModal } from "./components/AuthRequiredModal";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -219,6 +220,11 @@ function JobRoute() {
   );
 }
 
+function AuthRequiredModalWrapper() {
+  const { pendingApplyJob, closeAuthModal } = useData();
+  return <AuthRequiredModal job={pendingApplyJob} onClose={closeAuthModal} />;
+}
+
 export function AppContent() {
   return (
     <>
@@ -239,6 +245,7 @@ export function AppContent() {
           <Route path="/jobs/:id" element={<JobRoute />} />
         </Routes>
       </div>
+      <AuthRequiredModalWrapper />
       <BottomNav />
       <Footer />
     </>
